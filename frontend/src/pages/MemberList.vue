@@ -1,8 +1,8 @@
 <template>
   <div :class="{ login: isAdmin}">
     <div class="admin_login-area">
-      <button v-if="!isAdmin" @click="goLogin">로그인</button>
-      <button v-else @click="logout">로그아웃</button>
+      <button v-if="!isAdmin" @click="goLogin">Login</button>
+      <button v-else @click="logout">Logout</button>
     </div>
 
     <ul class="tab-list">
