@@ -1,9 +1,15 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path"; // 1. path 모듈 추가
+import { fileURLToPath } from "url"; // ES Module 환경에서 경로 설정을 위해 필요
 import { connectDB } from "./db.js";
 import Member from "./models/Member.js";
 import Schedule from "./models/Schedule.js";
+
+// ES Module에서 __dirname 사용을 위한 설정
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -168,6 +174,25 @@ app.delete("/api/schedules/:id", async (req, res) => {
   }
 });
 
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
+
+/* =========================
+   프론트엔드 정적 파일 서빙 (추가)
+========================= */
+
+// 2. Vue 빌드 결과물(dist) 폴더를 static으로 등록
+// backend와 frontend가 동일 경로에 있으므로 ../frontend/dist로 접근합니다.
+const frontendDistPath = path.join(__dirname, "../frontend/dist");
+app.use(express.static(frontendDistPath));
+
+// 3. API 이외의 모든 경로는 Vue의 index.html로 리다이렉트 (SPA 대응)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendDistPath, "index.html"));
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
