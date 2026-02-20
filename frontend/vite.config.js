@@ -12,7 +12,7 @@ export default defineConfig(({ command }) => ({
   ],
   // 개발 환경에서는 base를 '/'로 두어 새로고침 시 경고가 발생하지 않도록 하고,
   // 빌드 시에만 GitHub Pages 배포 경로를 사용
-  base: command === 'build' ? '/daumm/' : '/',
+  base: command === 'github' ? '/daumm/' : '/',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
