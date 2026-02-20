@@ -12,7 +12,10 @@
 
     <div class="member_list-wrap">
       <div class="sort-area">
-        <span class="selectBox">
+        <span class="frm">
+          <input type="text" v-model="searchTitle" placeholder="벙제목 검색" />
+        </span>
+        <span class="frm">
           <input type="text" v-model="searchName" placeholder="이름 검색" />
         </span>
       </div>
@@ -24,23 +27,23 @@
       <ul class="member-list" v-if="pagedLists.length">
         <li v-for="item in pagedLists" :key="item._id">
           <div class="schedule-info">
-            <div>
+            <div class="scd-info">
               <div>
                 <a v-if="isAdmin" @click.prevent="goEdit(item._id)">{{ item.title }}</a>
                 <span v-else>{{ item.title }}</span>
               </div>
-              <div><span>{{ formatYYMMDD(item.date) }}</span></div>
-              <div v-if="isAdmin">
-                <button @click="remove(item._id)">삭제</button>
-              </div>
+              <span>{{ formatYYMMDD(item.date) }}</span>
             </div>
-            <div class="participants-area" style="margin-top: 10px">
+            <div class="participants-area">
               <div>
-                <a class="btn-more" @click.prevent="toggleParticipants(item._id)" :class="{ active: isParticipantsActive(item._id) }"><span>참여자</span></a>
+                <a class="btn-more" @click.prevent="toggleParticipants(item._id)" :class="{ active: isParticipantsActive(item._id) }"><span>참석자</span></a>
               </div>
               <div class="participants-info active" :class="{ active: isParticipantsActive(item._id) }">
                 <span>{{ renderParticipants(item.participants) }}</span>
               </div>
+            </div>
+            <div v-if="isAdmin">
+              <button @click="remove(item._id)">삭제</button>
             </div>
           </div>
         </li>
@@ -74,6 +77,7 @@ import { getSchedules, deleteSchedule } from '@/api/schedules'
 
 const router = useRouter()
 const lists = ref([])
+const searchTitle = ref('')
 const searchName = ref('')
 const pageSize = 10
 const currentPage = ref(1)
@@ -138,11 +142,15 @@ const renderParticipants = (arr = []) => {
 }
 
 const filtered = computed(() => {
-  const q = searchName.value.trim().toLowerCase()
-  if (!q) return lists.value
-  return lists.value.filter(item =>
-    (item.participants || []).some(p => (p.name || '').toLowerCase().includes(q))
-  )
+  const titleQ = searchTitle.value.trim().toLowerCase()
+  const nameQ = searchName.value.trim().toLowerCase()
+  return lists.value.filter(item => {
+    const matchTitle = !titleQ || (item.title || '').toLowerCase().includes(titleQ)
+    const matchName =
+      !nameQ ||
+      (item.participants || []).some(p => (p.name || '').toLowerCase().includes(nameQ))
+    return matchTitle && matchName
+  })
 })
 const totalCount = computed(() => filtered.value.length)
 

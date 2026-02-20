@@ -28,31 +28,27 @@
             <input type="radio" id="gender_woman" name="gender" value="woman" v-model="selectedGender"><label for="gender_woman">여자</label>
           </span>
         </div>
-        <span class="selectBox">
-          <select name="birthYear" v-model="selectedBirthYear" @change="filterByBirthYear">
-            <option value="total">전체</option>
-            <option value="97">97</option>
-            <option value="96">96</option>
-            <option value="95">95</option>
-            <option value="94">94</option>
-            <option value="93">93</option>
-            <option value="92">92</option>
-            <option value="91">91</option>
-            <option value="90">90</option>
-            <option value="89">89</option>
-            <option value="88">88</option>
-            <option value="87">87</option>
-            <option value="86">86</option>
-            <option value="85">85</option>
-          </select>
-        </span>
-        <span class="selectBox">
-          <select id="period" v-model="selectedPeriod">
-            <option value="total">total</option>
-            <option value="7">7일</option>
-            <option value="15">15일</option>
-          </select>
-        </span>
+        <div class="select_sort-area">
+          <span class="selectBox">
+            <select name="birthYear" v-model="selectedBirthYear" @change="filterByBirthYear">
+              <option value="total">전체</option>
+              <option 
+                v-for="num in 13" 
+                :key="num"
+                :value="String(98 - num)"
+              >
+                {{ 98 - num }}
+              </option>
+            </select>
+          </span>
+          <span class="selectBox">
+            <select id="period" v-model="selectedPeriod">
+              <option value="total">total</option>
+              <option value="7">7일</option>
+              <option value="15">15일</option>
+            </select>
+          </span>
+        </div>
       </div>
 
       <div class="total-count-area">
@@ -62,28 +58,40 @@
       <ul class="member-list" v-if="pagedMembers.length">
         <li v-for="member in pagedMembers" :key="member._id">
           <div class="user_info-area">
-            <div class="info">
-              <a v-if="isAdmin" @click.prevent="goEdit(member._id)">{{ member.member_name }}</a>
-              <span v-else>{{ member.member_name }}</span>
+            <div class="nga-area">
+              <div class="info">
+                <div class="name-info">
+                  <a v-if="isAdmin" @click.prevent="goEdit(member._id)">{{ member.member_name }}</a>
+                  <span v-else>{{ member.member_name }}</span>
+                </div>
+                <span class="gender">{{ displayGender(member.gender) }}</span>
+              </div>
+              <div class="info"><span class="addr">{{ member.addr }}</span></div>
             </div>
-            <div class="info"><span class="addr">{{ member.addr }}</span></div>
-            <div class="info"><span class="gender">{{ member.gender }}</span></div>
-            <div class="info" :class="{ birth: isBirthThisMonth(member.birth) }">
-              <span>
-                {{ formatYYMMDD(member.birth) }}
-              </span>
+            <div class="br-area">
+              <div class="info" :class="{ birth: isBirthThisMonth(member.birth) }">
+                <span>
+                  {{ formatYYMMDD(member.birth) }}
+                </span>
+              </div>
+              <div class="info">
+                <span class="regdate" :class="{ new: isNew(member.regist_date) }">{{ formatYYMMDD(member.regist_date) }}</span>
+              </div>
             </div>
             <div class="info"><span>{{ member.manage }}</span></div>
-            <div class="info">
-              <span class="regdate" :class="{ new: isNew(member.regist_date) }">{{ formatYYMMDD(member.regist_date) }}</span>
-            </div>
             <div class="info"><span class="dday">{{ getDday(member) }}</span></div>
             <div class="info"><span>{{ member.attend }}</span></div>
             <div class="info">
-              <span class="participaion-cnt">{{ getTotalParticipation(member._id) }}</span>
-              <div>
+              <span class="participaion-cnt">총 참석횟수 : {{ getTotalParticipation(member._id) }}</span>
+              <div class="tbl-area">
+                <span>월별 참석 횟수</span>
                 <table class="month-check">
                   <tbody>
+                    <tr>
+                      <th 
+                        v-for="mon in 12"
+                        :key="mon">{{ mon }}월</th>
+                    </tr>
                     <tr>
                       <td
                         v-for="mon in 12"
@@ -351,6 +359,11 @@ const isWomanGender = (v) => {
   const n = normalize(v)
   return n === 'woman' || n === 'w' || n.startsWith('여')
 }
+const displayGender = (v) => {
+  if (isWomanGender(v)) return '여'
+  if (isManGender(v)) return '남'
+  return String(v || '')
+}
 const displayedMembers = computed(() => {
   let list = members.value
   if (selectedGender.value === 'man') {
@@ -397,15 +410,7 @@ const isBirthFiltered = ref(false)
 const toggleBirthFilter = () => {
   if (!isBirthFiltered.value) {
     const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0')
-
-    members.value = [...originMembers.value].sort((a, b) => {
-      const aHit = birthMonthOf(a.birth) === currentMonth ? 1 : 0
-      const bHit = birthMonthOf(b.birth) === currentMonth ? 1 : 0
-      if (bHit !== aHit) return bHit - aHit
-      const an = a.member_name || ''
-      const bn = b.member_name || ''
-      return an.localeCompare(bn, 'ko')
-    })
+    members.value = originMembers.value.filter(member => birthMonthOf(member.birth) === currentMonth)
   } else {
     members.value = [...originMembers.value]
   }
