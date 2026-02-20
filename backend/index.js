@@ -174,20 +174,6 @@ app.delete("/api/schedules/:id", async (req, res) => {
   }
 });
 
-/* =========================
-   프론트엔드 정적 파일 서빙 (추가)
-========================= */
-
-// 2. Vue 빌드 결과물(dist) 폴더를 static으로 등록
-// backend와 frontend가 동일 경로에 있으므로 ../frontend/dist로 접근합니다.
-const frontendDistPath = path.join(__dirname, "../frontend/dist");
-app.use(express.static(frontendDistPath));
-
-// 3. API 이외의 모든 경로는 Vue의 index.html로 리다이렉트 (SPA 대응)
-app.get("*", (req, res) => {
-  res.sendFile(path.join(frontendDistPath, "index.html"));
-});
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
