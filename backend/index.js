@@ -175,6 +175,12 @@ app.delete("/api/schedules/:id", async (req, res) => {
   }
 });
 
+const distPath = path.resolve(__dirname, "../frontend/dist");
+app.use(express.static(distPath));
+app.get("*", (_req, res) => {
+  res.sendFile(path.join(distPath, "index.html"));
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
