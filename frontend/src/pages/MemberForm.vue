@@ -46,12 +46,9 @@ const router = useRouter();
 const isEdit = computed(() => !!route.params.id);
 const loading = ref(false);
 
-const defaultMonth = {"01": 0, "02": 0, "03": 0, "04": 0, "05": 0, "06": 0, "07": 0, "08": 0, "09": 0, "10": 0, "11": 0, "12": 0}
-
 const form = reactive({
   member_name: "",
   participation: "",
-  month: { ...defaultMonth }, 
   birth: "",
   regist_date: "",
   manage: false,
@@ -70,11 +67,6 @@ onMounted(async () => {
         form.manage = res.data.manage === true;     
         form.gender = res.data.gender || "";
         form.addr = res.data.addr || "";
-
-        form.month = {
-          ...defaultMonth,
-          ...(res.data.month || {})
-        }
     } catch (err) {
       console.error(err);
       console.log("회원 정보를 불러오는 중 오류 발생");
@@ -101,7 +93,4 @@ const submit = async () => {
     loading.value = false;
   }
 };
-
-const getCurrentMonth = () =>
-  String(new Date().getMonth() + 1).padStart(2, "0")
 </script>
