@@ -14,8 +14,8 @@
       <div class="sort-wrap">
         <div class="sort_btn-area">
           <button class="btn1" @click="sortByAttend">{{ isAttendSorted ? '참여 순위' : '초기화' }}</button>
-          <button class="btn2" @click="toggleBirthFilter">{{ isBirthFiltered ? '전체 보기' : '이번 달 생일' }}</button>
-          <button class="btn3" @click="sortByName">이름정렬</button>
+          <button class="btn2" @click="toggleBirthFilter">{{ isBirthFiltered ? '전체' : '이번 달 생일' }}</button>
+          <button class="btn3" @click="sortByName">이름</button>
         </div>
         <div class="gender_sort-area">
           <span class="frm-radio">
