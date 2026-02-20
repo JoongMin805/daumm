@@ -20,7 +20,8 @@ app.use(cors({
   origin: function (origin, callback) {
     const allowedOrigins = [
       'http://localhost:5173',
-      'https://joongmin805.github.io'
+      'https://joongmin805.github.io',
+      'https://daumm-list.onrender.com'
     ];
 
     // 브라우저가 아닌 요청 (Postman 등)
