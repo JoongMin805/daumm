@@ -192,15 +192,11 @@ const logout = () => {
 const isBirthThisMonth = (birth) => {
   if (!birth) return false
 
-  // birth: YYMMDD or YYYYMMDD
-  const birthMonth =
-    birth.length === 6
-      ? birth.substring(2, 4)   // YYMMDD
-      : birth.substring(4, 6)   // YYYYMMDD
+  const m = birthMonthOf(birth)
 
   const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0')
 
-  return birthMonth === currentMonth
+  return m === currentMonth
 }
 
 const monthlyCounts = computed(() => {
@@ -239,6 +235,19 @@ const formatYYMMDD = (value) => {
   const mm = String(d.getMonth() + 1).padStart(2, '0')
   const dd = String(d.getDate()).padStart(2, '0')
   return `${yy}${mm}${dd}`
+}
+
+const birthMonthOf = (value) => {
+  if (!value) return null
+  const s = String(value).trim()
+  if (/^\d{6}$/.test(s)) return s.slice(2, 4)
+  if (/^\d{8}$/.test(s)) return s.slice(4, 6)
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s.slice(5, 7)
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(s)) return s.slice(0, 2)
+  if (/^\d{2}-\d{2}-\d{4}$/.test(s)) return s.slice(0, 2)
+  const d = new Date(s)
+  if (!isNaN(d)) return String(d.getMonth() + 1).padStart(2, '0')
+  return null
 }
 
 const isNew = (value) => {
@@ -387,21 +396,17 @@ const isBirthFiltered = ref(false)
 
 const toggleBirthFilter = () => {
   if (!isBirthFiltered.value) {
-    // 👉 이번 달 생일만 필터
     const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0')
 
-    members.value = originMembers.value.filter(member => {
-      if (!member.birth) return false
-
-      const birthMonth =
-        member.birth.length === 6
-          ? member.birth.substring(2, 4)
-          : member.birth.substring(4, 6)
-
-      return birthMonth === currentMonth
+    members.value = [...originMembers.value].sort((a, b) => {
+      const aHit = birthMonthOf(a.birth) === currentMonth ? 1 : 0
+      const bHit = birthMonthOf(b.birth) === currentMonth ? 1 : 0
+      if (bHit !== aHit) return bHit - aHit
+      const an = a.member_name || ''
+      const bn = b.member_name || ''
+      return an.localeCompare(bn, 'ko')
     })
   } else {
-    // 👉 다시 전체 목록으로 복구
     members.value = [...originMembers.value]
   }
 
