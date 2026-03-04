@@ -1,42 +1,44 @@
 <template>
-  <div>
-    <h1>{{ isEdit ? "수정" : "등록" }}</h1>
+  <div class="reg_frm-wrap">
+    <h1>{{ isEdit ? "일정 수정" : "일정 등록" }}</h1>
 
-    <form @submit.prevent="submit">
-      <span class="frm">
-        <input type="text" v-model="form.title" placeholder="제목" />
-      </span>
-      <span class="frm">
-        <VueDatePicker v-model="form.date" placeholder="날짜(YYMMDD)" :auto-apply="true" :enable-time-picker="false" :formats="{ input: 'yyMMdd' }"/>
-      </span>
-
-      <div class="schedule_info-wrap">
-        <h3>참여 회원 선택</h3>
-        <div v-if="members.length">
-          <span class="frm-checkbox" v-for="m in members" :key="m._id">
-            <input :id="`choice_${m._id}`" type="checkbox" :value="m._id" v-model="selectedIds" /><label :for="`choice_${m._id}`">{{ m.member_name }}</label>
-          </span>
+    <div class="reg_frm-area">
+      <form @submit.prevent="submit">
+        <div class="frm">
+          <input type="text" v-model="form.title" placeholder="제목" />
         </div>
-        <div class="no_data" v-else>
-          <p>회원 목록을 불러오는 중이거나 없습니다.</p>
+        <div class="datepicker">
+          <VueDatePicker v-model="form.date" placeholder="날짜(YYMMDD)" :auto-apply="true" :enable-time-picker="false" :formats="{ input: 'yyMMdd' }"/>
         </div>
 
-        <div class="btn_confirm-area">
-          <button type="button" @click="confirmSelection">확인</button>
-          <button type="button" @click="clearSelection">선택 해제</button>
+        <div class="schedule_info-wrap">
+          <h3>참여자</h3>
+          <div v-if="members.length" class="mem-list">
+            <span class="frm-checkbox" v-for="m in members" :key="m._id">
+              <input :id="`choice_${m._id}`" type="checkbox" :value="m._id" v-model="selectedIds" /><label :for="`choice_${m._id}`">{{ m.member_name }}</label>
+            </span>
+          </div>
+          <div class="no_data" v-else>
+            <p>회원 목록을 불러오는 중이거나 없습니다.</p>
+          </div>
+
+          <div class="btn_confirm-area">
+            <button type="button" @click="clearSelection" class="btn-cancel">선택 해제</button>
+            <button type="button" @click="confirmSelection">확인</button>
+          </div>
+
+          <div class="schedule_member-info">
+            <strong>참여자 확인 : </strong>
+            <span>{{ participantsPreview }}</span>
+          </div>
         </div>
 
-        <div class="schedule_member-info">
-          <strong>선택된 참여자:</strong>
-          <span>{{ participantsPreview }}</span>
+        <div class="btm_btn-area">
+          <button type="button" @click="$router.push('/schedule')" class="btn-cancel">취소</button>
+          <button type="submit" :disabled="loading">{{ isEdit ? "수정" : "등록" }}</button>
         </div>
-      </div>
-
-      <div class="btm_btn-area">
-        <button type="submit" :disabled="loading">{{ isEdit ? "수정" : "등록" }}</button>
-        <button type="button" @click="$router.push('/schedule')">취소</button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </template>
 

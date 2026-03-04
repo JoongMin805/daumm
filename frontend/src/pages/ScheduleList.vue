@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ login: isAdmin}">
+  <div class="member_list-wrap" :class="{ login: isAdmin}">
     <div class="admin_login-area">
       <button v-if="!isAdmin" @click="goLogin">Login</button>
       <button v-else @click="logout">Logout</button>
@@ -10,7 +10,7 @@
       <li><button class="tab-item member active">Schedule</button></li>
     </ul>
 
-    <div class="member_list-wrap">
+    <div class="list-wrap">
       <div class="sort-area">
         <span class="frm">
           <input type="text" v-model="searchTitle" placeholder="벙제목 검색" />
@@ -32,17 +32,20 @@
                 <a v-if="isAdmin" @click.prevent="goEdit(item._id)">{{ item.title }}</a>
                 <span v-else>{{ item.title }}</span>
               </div>
-              <span>{{ formatYYMMDD(item.date) }}</span>
+              <div class="">
+                <span>날짜 : </span>
+                <span>{{ formatYYMMDD(item.date) }}</span>
+              </div>
             </div>
             <div class="participants-area">
               <div>
-                <a class="btn-more" @click.prevent="toggleParticipants(item._id)" :class="{ active: isParticipantsActive(item._id) }"><span>참석자</span></a>
+                <a class="btn-more" @click.prevent="toggleParticipants(item._id)" :class="{ active: isParticipantsActive(item._id) }"><span>참석자 : </span></a>
               </div>
               <div class="participants-info active" :class="{ active: isParticipantsActive(item._id) }">
                 <span>{{ renderParticipants(item.participants) }}</span>
               </div>
             </div>
-            <div v-if="isAdmin">
+            <div class="sch_del-area" v-if="isAdmin">
               <button @click="remove(item._id)">삭제</button>
             </div>
           </div>

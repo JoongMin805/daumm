@@ -65,26 +65,33 @@ body,
   padding: 24px;
 }
 
-.login {
-  padding-bottom: constant(safe-area-inset-bottom);
-  padding-bottom: env(safe-area-inset-bottom);
+.member_list-wrap {
+  padding: 8px 12px constant(safe-area-inset-bottom) 12px;
+  padding: 8px 12px env(safe-area-inset-bottom) 12px;
+}
+.member_list-wrap.login {
+  padding-bottom: calc(constant(safe-area-inset-bottom) + 72px);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 72px);
 }
 
+
 .login-form,
-.member_list-wrap {
+.list-wrap {
   width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
+  margin: 10px auto 0;
   background: var(--card);
   border: 1px solid var(--field-border);
   border-radius: 16px;
   padding: 28px 24px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.35);
 }
+.login-form {
+  margin-top: 18px;
+}
 
 .login-form h1,
-.member_list-wrap h1,
-.member_list-wrap h3 {
+.list-wrap h1,
+.list-wrap h3 {
   color: var(--text);
   font-weight: 700;
   text-align: center;
@@ -136,11 +143,26 @@ textarea:focus {
 }
 
 /* select box wrapper */
+.selectBox {
+  position: relative;
+}
+.selectBox::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  width: 20px;
+  height: 20px;
+  background: url(../images/ico_arrow_more.svg) no-repeat 50% 50%;
+  transform: translateY(-50%);
+}
 .selectBox select {
   padding-right: 40px;
 }
 
 /* buttons */
+.btn_confirm-area button,
+.btm_btn-area button,
 .btn,
 .btn-area button,
 .btn_reg-area button,
@@ -189,7 +211,9 @@ textarea:focus {
 }
 
 /* secondary buttons (like 취소) */
-.btn-area button + button,
+.btn_confirm-area button.btn-cancel,
+.btm_btn-area button.btn-cancel,
+.btn-area button.btn-cancel,
 .gathering_info-wrap button + button {
   background: transparent;
   color: var(--text);
@@ -215,7 +239,7 @@ textarea:focus {
 }
 
 /* list items cards */
-.member-list li,
+.member-list > li,
 .gathering-info {
   list-style: none;
   margin: 0 0 12px;
@@ -241,20 +265,29 @@ textarea:focus {
 .info a:hover {
   text-decoration: underline;
 }
-
+.info.user-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.info.user-info .gender {
+  margin-left: 8px;
+}
 /* new badge on regdate */
 .regdate {
   position: relative;
   color: var(--text);
 }
+.regdate.new {padding-right: 28px;}
 .regdate.new::after {
-  content: "NEW";
-  display: inline-block;
-  margin-left: 8px;
+  content: "N";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
   padding: 2px 8px;
   border-radius: 999px;
-  font-size: 11px;
-  letter-spacing: .04em;
+  font-size: 10px;
   background: var(--primary);
   color: #fff;
   box-shadow: 0 6px 14px var(--primary-shadow);
@@ -265,11 +298,10 @@ textarea:focus {
 .tab-list {
   display: flex;
   gap: 8px;
-  padding: 8px 16px;
 }
 .tab-item {
   background: transparent;
-  border: 1px solid var(--field-border);
+  border: 1px solid rgba(255,255,255,0.3);
   color: var(--text);
   border-radius: 12px;
   padding: 10px 12px;
@@ -294,3 +326,147 @@ textarea:focus {
 .participants-info.active {
   display: block;
 }
+
+.admin_login-area {
+  position: fixed;
+  top: 2.2222vw;
+  right: 3.3333vw;
+  z-index: 10;
+}
+.admin_login-area button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  min-height: 32px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0 8px 18px var(--primary-shadow);
+  transition: background .15s ease, transform .06s ease, box-shadow .15s ease, opacity .15s ease;
+}
+.list-wrap .sort-area .frm {
+  display: flex;
+}
+.list-wrap .sort-area .frm + .frm{
+  margin-top: 10px;
+}
+
+.sort_btn-area {
+  display: flex;
+  gap: 12px;
+}
+.sort_btn-area button {
+  padding: 8px 0;
+}
+
+.frm-checkbox,
+.frm-radio {
+  display: inline-block;
+  position: relative;
+}
+
+.frm-checkbox input[type="checkbox"],
+.frm-radio input[type="radio"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.frm-checkbox input[type="checkbox"] + label,
+.frm-radio input[type="radio"] + label {
+  display: inline-block;
+  padding-left: 28px;
+  cursor: pointer;
+}
+.frm-radio input[type="radio"] + label::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  background: url(../images/ico_radio.svg) no-repeat 50% 50% / 100% 100%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+}
+.frm-radio input[type="radio"]:checked + label::before {
+  background-image: url(../images/ico_radio_on.svg);
+}
+.frm-checkbox input[type="checkbox"] + label::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  background: url(../images/ico_checkbox.svg) no-repeat 50% 50% / 100% 100%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+}
+.frm-checkbox input[type="checkbox"]:checked + label::before {
+  background-image: url(../images/ico_checkbox_on.svg);
+}
+.gender_sort-area {
+  margin-top: 6px;
+}
+.gender_sort-area .frm-radio + .frm-radio {
+  margin-left: 12px;
+}
+.select_sort-area {
+  margin-top: 24px;
+}
+.select_sort-area div + div {
+  margin-top: 12px;
+}
+.select_sort-area .s-tit {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.sort-wrap {
+  margin-bottom: 24px;
+}
+.total-count-area {
+  margin-bottom: 4px;
+}
+
+.nga-area,
+.br-area{display: flex;align-items: center; justify-content: space-between;}
+.name-info a{text-decoration: underline;}
+.user_info-area > div + div{margin-top: 4px;}
+.tbl-area{margin-top: 4px;}
+.month-check{display: flex;flex-wrap: wrap;margin-top: 6px;padding: 6px;border: 1px solid #575757;border-radius: 6px;}
+.month-check li{width: calc(100% / 6);margin-top: 4px;}
+.month-check li:nth-child(n+7){margin-top: 8px;}
+.month-check li span{display: block;text-align: center;font-size: 14px;}
+.sch_del-area button,
+.user_del-area button{display: flex;align-items: center;justify-content: center;border-radius: 12px;padding: 0 16px;min-height: 36px;font-weight: 600;width: 100%;background: transparent;color: var(--text);border: 1px solid #a3a7ad;box-shadow: none;}
+.btn_reg-area{position: fixed;bottom: 12px;left: 12px;z-index: 10;width: calc(100% - 24px);}
+.total_schedule-area{margin: 24px 0 4px;}
+.schedule-info .scd-info a{display: block;text-decoration: underline;}
+.sch_del-area{margin-top: 4px;}
+.schedule-info div + div{margin-top: 4px;}
+.schedule-info .sch_del-area,
+.user_info-area .user_del-area{margin-top: 12px;}
+
+.reg_frm-wrap{padding: 8px 12px}
+.reg_frm-wrap h1{font-size: 20px;}
+.reg_frm-area{margin-top: 12px;}
+.reg_frm-area .frm{display: block;}
+.datepicker input.dp__input{padding-left: 32px;}
+.reg_frm-area form > div{margin-top: 16px;}
+.btn_confirm-area,
+.btm_btn-area,
+.reg_frm-area .btn-area{display: flex;gap: 8px;}
+.btn_confirm-area button,
+.btm_btn-area button,
+.reg_frm-area .btn-area button{flex: 1;}
+.reg_frm-area .radio-area .frm-radio + .frm-radio{margin-left: 12px;}
+.schedule_info-wrap .mem-list{margin-top: 8px;}
+.schedule_info-wrap .mem-list .frm-checkbox + .frm-checkbox{margin-left: 6px;}
+.schedule_info-wrap > div{margin-top: 12px;}

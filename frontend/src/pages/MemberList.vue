@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ login: isAdmin}">
+  <div class="member_list-wrap" :class="{ login: isAdmin}">
     <div class="admin_login-area">
       <button v-if="!isAdmin" @click="goLogin">Login</button>
       <button v-else @click="logout">Logout</button>
@@ -10,16 +10,16 @@
       <li><button class="tab-item member" @click="goGatherList">Schedule</button></li>
     </ul>
     
-    <div class="member_list-wrap">
+    <div class="list-wrap">
       <div class="sort-wrap">
         <div class="sort_btn-area">
-          <button class="btn1" @click="sortByAttend">{{ isAttendSorted ? '참여 순위' : '초기화' }}</button>
+          <button class="btn1" @click="sortByAttend">{{ isAttendSorted ? '초기화' : '참여순' }}</button>
           <button class="btn2" @click="toggleBirthFilter">{{ isBirthFiltered ? '전체' : '이번 달 생일' }}</button>
-          <button class="btn3" @click="sortByName">이름</button>
+          <button class="btn3" @click="sortByName">이름순</button>
         </div>
         <div class="gender_sort-area">
           <span class="frm-radio">
-            <input type="radio" id="total_gender" name="gender" value="total" v-model="selectedGender"><label for="total_gender">전체</label>
+            <input type="radio" id="total_gender" name="gender" value="total" v-model="selectedGender" checked><label for="total_gender">전체</label>
           </span>
           <span class="frm-radio">
             <input type="radio" id="gender_man" name="gender" value="man" v-model="selectedGender"><label for="gender_man">남자</label>
@@ -29,25 +29,31 @@
           </span>
         </div>
         <div class="select_sort-area">
-          <span class="selectBox">
-            <select name="birthYear" v-model="selectedBirthYear" @change="filterByBirthYear">
-              <option value="total">전체</option>
-              <option 
-                v-for="num in 13" 
-                :key="num"
-                :value="String(98 - num)"
-              >
-                {{ 98 - num }}
-              </option>
-            </select>
-          </span>
-          <span class="selectBox">
-            <select id="period" v-model="selectedPeriod">
-              <option value="total">total</option>
-              <option value="7">7일</option>
-              <option value="15">15일</option>
-            </select>
-          </span>
+          <div>
+            <span class="s-tit">연도</span>
+            <span class="selectBox">
+              <select name="birthYear" v-model="selectedBirthYear" @change="filterByBirthYear">
+                <option value="total">전체</option>
+                <option 
+                  v-for="num in 13" 
+                  :key="num"
+                  :value="String(98 - num)"
+                >
+                  {{ 98 - num }}
+                </option>
+              </select>
+            </span>
+          </div>
+          <div>
+            <span class="s-tit">남은기간</span>
+            <span class="selectBox">
+              <select id="period" v-model="selectedPeriod">
+                <option value="total">total</option>
+                <option value="7">7일</option>
+                <option value="15">15일</option>
+              </select>
+            </span>
+          </div>
         </div>
       </div>
 
@@ -56,58 +62,53 @@
       </div>
 
       <ul class="member-list" v-if="pagedMembers.length">
-        <li v-for="member in pagedMembers" :key="member._id">
+        <li v-for="member in pagedMembers" :key="member._id" :class="{ manage: String(member.manage).toUpperCase() === 'Y' }">
           <div class="user_info-area">
             <div class="nga-area">
-              <div class="info">
+              <div class="info user-info">
                 <div class="name-info">
                   <a v-if="isAdmin" @click.prevent="goEdit(member._id)">{{ member.member_name }}</a>
                   <span v-else>{{ member.member_name }}</span>
                 </div>
+              </div>
+              <div class="info">
+                <span class="addr">{{ member.addr }}</span>,
                 <span class="gender">{{ displayGender(member.gender) }}</span>
               </div>
-              <div class="info"><span class="addr">{{ member.addr }}</span></div>
             </div>
             <div class="br-area">
               <div class="info" :class="{ birth: isBirthThisMonth(member.birth) }">
+                <span>생일 : </span>
                 <span>
                   {{ formatYYMMDD(member.birth) }}
                 </span>
               </div>
               <div class="info">
+                <span>가입일 : </span>
                 <span class="regdate" :class="{ new: isNew(member.regist_date) }">{{ formatYYMMDD(member.regist_date) }}</span>
               </div>
             </div>
-            <div class="info"><span>{{ member.manage }}</span></div>
-            <div class="info"><span class="dday">{{ getDday(member) }}</span></div>
-            <div class="info"><span>{{ member.attend }}</span></div>
+            <div class="info">
+              <span class="dday">월 1회 참석 : {{ getDday(member) }}</span>
+            </div>
             <div class="info">
               <span class="participaion-cnt">총 참석횟수 : {{ getTotalParticipation(member._id) }}</span>
               <div class="tbl-area">
                 <span>월별 참석 횟수</span>
-                <table class="month-check">
-                  <tbody>
-                    <tr>
-                      <th 
-                        v-for="mon in 12"
-                        :key="mon">{{ mon }}월</th>
-                    </tr>
-                    <tr>
-                      <td
-                        v-for="mon in 12"
-                        :key="mon"
-                        class="month-cnt"
-                        :data-month="String(mon).padStart(2, '0')"
-                      >
-                        {{ getMonthValue(member, mon) }}
-                      </td>
-                    </tr>
-                  </tbody>  
-                </table>   
+                <ul class="month-check">
+                  <li
+                    v-for="mon in 12"
+                    :key="mon"
+                    class="month-cnt"
+                    :data-month="String(mon).padStart(2, '0')"
+                  >
+                    <span class="mon">{{ mon }}월</span>
+                    <span class="num">{{ getMonthValue(member, mon) }}</span>
+                  </li>
+                </ul>   
               </div>
             </div>
-            <div class="info"><span>{{ member.new_check }}</span></div>
-            <div class="info"><span>{{ member.phone }}</span></div>
+            <!-- <div class="info"><span>{{ member.new_check }}</span></div> -->
             <div class="user_del-area" v-if="isAdmin">
               <button @click="remove(member._id)">삭제</button>
             </div>
