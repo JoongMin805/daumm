@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="login-form">
-      <h1>운영진</h1>
+      <h1>로그인</h1>
       <form @submit.prevent="login">
         <div class="form-group">
           <input v-model="id" placeholder="아이디" required />

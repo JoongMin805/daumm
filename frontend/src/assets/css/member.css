@@ -74,8 +74,6 @@ body,
   padding-bottom: calc(env(safe-area-inset-bottom) + 20vw);
 }
 
-
-.login-form,
 .list-wrap {
   width: 100%;
   margin: 2.7778vw auto 0;
@@ -85,9 +83,19 @@ body,
   padding: 7.7778vw 6.6667vw;
   box-shadow: 0 2.7778vw 8.3333vw rgba(0,0,0,0.35);
 }
+
 .login-form {
-  margin-top: 5vw;
+  width: 100%;
 }
+
+.login-form h1 {
+  font-size: 8.8889vw;
+}
+
+.login-form form > div {
+  margin-bottom: 3.3333vw;
+}
+
 
 .login-form h1,
 .list-wrap h1,
@@ -382,7 +390,7 @@ textarea:focus {
 .frm-checkbox input[type="checkbox"] + label,
 .frm-radio input[type="radio"] + label {
   display: inline-block;
-  padding-left: 4.4444vw;
+  padding-left: 7.7778vw;
   cursor: pointer;
 }
 .frm-radio input[type="radio"] + label::before {
@@ -392,8 +400,8 @@ textarea:focus {
   left: 0;
   background: url(../images/ico_radio.svg) no-repeat 50% 50% / 100% 100%;
   transform: translateY(-50%);
-  width: 2.2222vw;
-  height: 2.2222vw;
+  width: 6.6667vw;
+  height: 6.6667vw;
 }
 .frm-radio input[type="radio"]:checked + label::before {
   background-image: url(../images/ico_radio_on.svg);
@@ -405,8 +413,8 @@ textarea:focus {
   left: 0;
   background: url(../images/ico_checkbox.svg) no-repeat 50% 50% / 100% 100%;
   transform: translateY(-50%);
-  width: 2.2222vw;
-  height: 2.2222vw;
+  width: 6.6667vw;
+  height: 6.6667vw;
 }
 .frm-checkbox input[type="checkbox"]:checked + label::before {
   background-image: url(../images/ico_checkbox_on.svg);
@@ -440,10 +448,10 @@ textarea:focus {
 .name-info a{text-decoration: underline;}
 .user_info-area > div + div{margin-top: 2.2222vw;}
 .tbl-area{margin-top: 4.4444vw;}
-.month-check{display: flex;flex-wrap: wrap;margin-top: 6.6667vw;padding: 6.6667vw;border: 0.2778vw solid #575757;border-radius: 1.6667vw;}
-.month-check li{width: calc(100% / 6);margin-top: 4.4444vw;}
-.month-check li:nth-child(n+7){margin-top: 8.8889vw;}
-.month-check li span{display: block;text-align: center;font-size: 2.2222vw;}
+.month-check{display: flex;flex-wrap: wrap;margin-top: 6.6667vw;padding: 2.2222vw;border: 0.2778vw solid #575757;border-radius: 1.6667vw;}
+.month-check li{width: calc(100% / 6);}
+.month-check li:nth-child(n+7){margin-top: 3.3333vw;}
+.month-check li span{display: block;text-align: center;font-size: 3.8889vw;}
 .sch_del-area button,
 .user_del-area button{display: flex;align-items: center;justify-content: center;border-radius: 3.3333vw;padding: 0 4.4444vw;min-height: 10vw;font-weight: 600;width: 100%;background: transparent;color: var(--text);border: 0.2778vw solid #a3a7ad;box-shadow: none;}
 .btn_reg-area{position: fixed;bottom: 2.2222vw;left: 3.3333vw;z-index: 10;width: calc(100% - 6.6667vw);}
@@ -451,6 +459,7 @@ textarea:focus {
 .schedule-info .scd-info a{display: block;text-decoration: underline;}
 .sch_del-area{margin-top: 2.2222vw;}
 .schedule-info div + div{margin-top: 4.4444vw;}
+.schedule-info div.participants-info{margin-top: 2.2222vw;}
 .schedule-info .sch_del-area,
 .user_info-area .user_del-area{margin-top: 2.2222vw;}
 
@@ -458,8 +467,8 @@ textarea:focus {
 .reg_frm-wrap h1{font-size: 4.4444vw;}
 .reg_frm-area{margin-top: 2.2222vw;}
 .reg_frm-area .frm{display: block;}
-.datepicker input.dp__input{padding-left: 4.4444vw;}
-.reg_frm-area form > div{margin-top: 2.2222vw;}
+.datepicker input.dp__input{padding-left: 7.7778vw}
+.reg_frm-area form > div{margin-top: 3.3333vw}
 .btn_confirm-area,
 .btm_btn-area,
 .reg_frm-area .btn-area{display: flex;gap: 3.3333vw;}
