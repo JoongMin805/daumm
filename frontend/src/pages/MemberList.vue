@@ -68,7 +68,7 @@
       </div>
 
       <ul class="member-list" v-if="pagedMembers.length">
-        <li v-for="member in pagedMembers" :key="member._id" :class="{ manage: String(member.manage).toUpperCase() === 'Y' }">
+        <li v-for="member in pagedMembers" :key="member._id" :class="{ manage: String(member.manage).toUpperCase() === 'Y', birth: isBirthThisMonth(member.birth) }">
           <div class="user_info-area">
             <div class="nga-area">
               <div class="info user-info">
