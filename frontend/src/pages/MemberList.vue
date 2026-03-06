@@ -415,9 +415,20 @@ const displayedMembers = computed(() => {
 })
 const totalPages = computed(() => Math.max(1, Math.ceil(displayedMembers.value.length / pageSize)))
 const pages = computed(() => Array.from({ length: totalPages.value }, (_, i) => i + 1))
+const sortedMembers = computed(() => {
+  if (isAttendSorted.value) {
+    return displayedMembers.value
+  }
+  const dir = isNameAsc.value ? 1 : -1
+  return [...displayedMembers.value].sort((a, b) => {
+    const an = a.member_name || ''
+    const bn = b.member_name || ''
+    return an.localeCompare(bn, 'ko') * dir
+  })
+})
 const pagedMembers = computed(() => {
   const start = (currentPage.value - 1) * pageSize
-  return displayedMembers.value.slice(start, start + pageSize)
+  return sortedMembers.value.slice(start, start + pageSize)
 })
 const sortByAttend = () => {
   if (!isAttendSorted.value) {
