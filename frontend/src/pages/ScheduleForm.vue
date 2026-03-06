@@ -14,7 +14,7 @@
         <div class="schedule_info-wrap">
           <h3>참여자</h3>
           <div v-if="members.length" class="mem-list">
-            <span class="frm-checkbox" v-for="m in members" :key="m._id">
+            <span class="frm-checkbox" v-for="m in sortedMembers" :key="m._id">
               <input :id="`choice_${m._id}`" type="checkbox" :value="m._id" v-model="selectedIds" /><label :for="`choice_${m._id}`">{{ m.member_name }}</label>
             </span>
           </div>
@@ -68,6 +68,14 @@ const loadMembers = async () => {
   const res = await getMembers()
   members.value = res.data
 }
+
+const sortedMembers = computed(() => {
+  return [...members.value].sort((a, b) => {
+    const an = a?.member_name || ''
+    const bn = b?.member_name || ''
+    return an.localeCompare(bn, 'ko', { sensitivity: 'base' })
+  })
+})
 
 const loadSchedule = async () => {
   if (!isEdit.value) return

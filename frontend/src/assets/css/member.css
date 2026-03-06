@@ -391,6 +391,8 @@ textarea:focus {
 .frm-radio input[type="radio"] + label {
   display: inline-block;
   padding-left: 7.7778vw;
+  height: 6.6667vw;
+  line-height: 6.6667vw;
   cursor: pointer;
 }
 .frm-radio input[type="radio"] + label::before {
@@ -477,5 +479,8 @@ textarea:focus {
 .reg_frm-area .btn-area button{flex: 1;}
 .reg_frm-area .radio-area .frm-radio + .frm-radio{margin-left: 3.3333vw;}
 .schedule_info-wrap .mem-list{margin-top: 4.4444vw;}
-.schedule_info-wrap .mem-list .frm-checkbox + .frm-checkbox{margin-left: 6.6667vw;}
+.schedule_info-wrap .mem-list .frm-checkbox{width: 30.5556vw;margin-right: 6.6667vw;}
+.schedule_info-wrap .mem-list .frm-checkbox:nth-child(n+2){margin-top: 2.2222vw;}
 .schedule_info-wrap > div{margin-top: 4.4444vw;}
+
+.pagination button{padding: 12px 8px;}

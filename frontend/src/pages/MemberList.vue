@@ -54,6 +54,12 @@
               </select>
             </span>
           </div>
+          <div>
+            <span class="s-tit">이름</span>
+            <div class="frm">
+              <input type="text" placeholder="이름을 입력하세요" v-model="searchName">
+            </div>
+          </div>
         </div>
       </div>
 
@@ -80,7 +86,7 @@
               <div class="info" :class="{ birth: isBirthThisMonth(member.birth) }">
                 <span>생일 : </span>
                 <span>
-                  {{ formatYYMMDD(member.birth) }}
+                  {{ formatBirth(member.birth) }}
                 </span>
               </div>
               <div class="info">
@@ -150,6 +156,7 @@ const originMembers = ref([])
 const selectedBirthYear = ref('total')
 const selectedPeriod = ref('total')
 const selectedGender = ref('total')
+const searchName = ref('')
 const schedule = ref([])
 const pageSize = 10
 const currentPage = ref(1)
@@ -244,6 +251,26 @@ const formatYYMMDD = (value) => {
   const mm = String(d.getMonth() + 1).padStart(2, '0')
   const dd = String(d.getDate()).padStart(2, '0')
   return `${yy}${mm}${dd}`
+}
+
+const formatBirth = (value) => {
+  if (!value) return ''
+  const s = String(value)
+  if (/^\d{6}$/.test(s)) {
+    return `${s.slice(0,2)}.${s.slice(2,4)}.${s.slice(4,6)}`
+  }
+  if (/^\d{8}$/.test(s)) {
+    const yy = s.slice(2,4)
+    const mm = s.slice(4,6)
+    const dd = s.slice(6,8)
+    return `${yy}.${mm}.${dd}`
+  }
+  const d = new Date(s)
+  if (isNaN(d)) return s
+  const yy = String(d.getFullYear()).slice(2)
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${yy}.${mm}.${dd}`
 }
 
 const birthMonthOf = (value) => {
@@ -367,6 +394,10 @@ const displayGender = (v) => {
 }
 const displayedMembers = computed(() => {
   let list = members.value
+  const q = searchName.value.trim().toLowerCase()
+  if (q) {
+    list = list.filter(m => (m.member_name || '').toLowerCase().includes(q))
+  }
   if (selectedGender.value === 'man') {
     list = list.filter(m => isManGender(m.gender))
   } else if (selectedGender.value === 'woman') {
