@@ -16,7 +16,7 @@
           <button class="btn1" @click="sortByAttend">{{ isAttendSorted ? '초기화' : '참여순' }}</button>
           <button class="btn2" @click="toggleBirthFilter">{{ isBirthFiltered ? '전체' : '이번 달 생일' }}</button>
           <button class="btn3" @click="sortByName">이름순</button>
-          <button class="btn4" @click="sortByLeader">벙주순</button>
+          <button class="btn4" @click="sortByLeader">{{ isLeaderSorted ? '초기화' : '벙주순' }}</button>
         </div>
         <div class="gender_sort-area">
           <span class="frm-radio">
@@ -509,7 +509,8 @@ const isLeaderSorted = ref(false)
 const sortByLeader = () => {
   if (!isLeaderSorted.value) {
     const mon = new Date().getMonth() + 1
-    members.value = [...members.value].sort((a, b) => {
+    const base = [...originMembers.value].filter(m => getLeaderMonthValue(m, mon) > 0)
+    members.value = base.sort((a, b) => {
       const ac = getLeaderMonthValue(a, mon)
       const bc = getLeaderMonthValue(b, mon)
       if (bc !== ac) return bc - ac
