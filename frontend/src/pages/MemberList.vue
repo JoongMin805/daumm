@@ -16,6 +16,7 @@
           <button class="btn1" @click="sortByAttend">{{ isAttendSorted ? '초기화' : '참여순' }}</button>
           <button class="btn2" @click="toggleBirthFilter">{{ isBirthFiltered ? '전체' : '이번 달 생일' }}</button>
           <button class="btn3" @click="sortByName">이름순</button>
+          <button class="btn4" @click="sortByLeader">벙주순</button>
         </div>
         <div class="gender_sort-area">
           <span class="frm-radio">
@@ -114,16 +115,16 @@
                 </ul>   
               </div>
             </div>
-            <div class="info">
-              <span class="">벙주 횟수: </span>
+            <div class="info leader-info" v-if="leaderMonths(member).length">
+              <span>벙주 횟수: </span>
               <div class="leader-cnt">
-                <ul class="month-check">
+                <ul class="leader-check">
                   <li
                     v-for="mon in leaderMonths(member)"
                     :key="'leader-'+mon"
                   >
-                    <span class="mon">{{ mon }}월</span>
-                    <span class="num">{{ getLeaderMonthValue(member, mon) }}</span>
+                    <span class="mon">{{ mon }}월 :</span> 
+                    <span class="num">{{ getLeaderMonthValue(member, mon) }} 회</span>
                   </li>
                 </ul>
               </div>
@@ -457,7 +458,7 @@ const displayedMembers = computed(() => {
 const totalPages = computed(() => Math.max(1, Math.ceil(displayedMembers.value.length / pageSize)))
 const pages = computed(() => Array.from({ length: totalPages.value }, (_, i) => i + 1))
 const sortedMembers = computed(() => {
-  if (isAttendSorted.value) {
+  if (isAttendSorted.value || isLeaderSorted.value) {
     return displayedMembers.value
   }
   const dir = isNameAsc.value ? 1 : -1
@@ -486,6 +487,7 @@ const sortByAttend = () => {
   }
 
   isAttendSorted.value = !isAttendSorted.value
+  isLeaderSorted.value = false
   currentPage.value = 1
 }
 
@@ -503,6 +505,25 @@ const toggleBirthFilter = () => {
   currentPage.value = 1
 }
 
+const isLeaderSorted = ref(false)
+const sortByLeader = () => {
+  if (!isLeaderSorted.value) {
+    const mon = new Date().getMonth() + 1
+    members.value = [...members.value].sort((a, b) => {
+      const ac = getLeaderMonthValue(a, mon)
+      const bc = getLeaderMonthValue(b, mon)
+      if (bc !== ac) return bc - ac
+      const an = a.member_name || ''
+      const bn = b.member_name || ''
+      return an.localeCompare(bn, 'ko')
+    })
+  } else {
+    members.value = [...originMembers.value]
+  }
+  isLeaderSorted.value = !isLeaderSorted.value
+  isAttendSorted.value = false
+  currentPage.value = 1
+}
 const filterByBirthYear = () => {
   // 👉 전체 선택
   if (selectedBirthYear.value === 'total') {
