@@ -14,6 +14,8 @@ const scheduleSchema = new mongoose.Schema(
     title: { type: String, required: true },
     date: { type: String },
     participants: { type: [ParticipantSchema], default: [] },
+    leader_id: { type: String, default: "" },
+    leader_name: { type: String, default: "" }
   },
   { timestamps: true }
 );

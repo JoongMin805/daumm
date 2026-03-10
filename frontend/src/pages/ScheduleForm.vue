@@ -11,6 +11,21 @@
           <VueDatePicker v-model="form.date" placeholder="날짜(YYMMDD)" :auto-apply="true" :enable-time-picker="false" :formats="{ input: 'yyMMdd' }"/>
         </div>
 
+        <div class="leader_selc-area">
+          <div class="frm">
+            <select v-model="form.leader_id" placeholder="(남) 벙주를 선택하세요.">
+              <option value="">벙주를 선택하세요.</option>
+              <option v-for="m in sortedMen" :value="m._id" :key="m._id">{{ m.member_name }}</option>
+            </select>
+          </div>
+          <div class="frm">
+            <select v-model="form.leader_id" placeholder="(여) 벙주를 선택하세요.">
+              <option value="">벙주를 선택하세요.</option>
+              <option v-for="m in sortedWomen" :value="m._id" :key="m._id">{{ m.member_name }}</option>
+            </select>
+          </div>
+        </div>
+
         <div class="schedule_info-wrap">
           <h3>참여자</h3>
           <div v-if="members.length" class="mem-list">
@@ -43,7 +58,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getMembers } from '@/api/members'
 import { getSchedule, createSchedule, updateSchedule } from '@/api/schedules'
@@ -58,7 +73,9 @@ const loading = ref(false)
 const form = reactive({
   title: '',
   date: '',
-  participants: [] // [{id, name}]
+  participants: [], // [{id, name}]
+  leader_id: '',
+  leader_name: ''
 })
 
 const members = ref([])
@@ -77,14 +94,27 @@ const sortedMembers = computed(() => {
   })
 })
 
+const normalize = (v) => String(v || '').toLowerCase()
+const isManGender = (v) => {
+  const n = normalize(v)
+  return n === 'man' || n === 'm' || n.startsWith('남')
+}
+const isWomanGender = (v) => {
+  const n = normalize(v)
+  return n === 'woman' || n === 'w' || n.startsWith('여')
+}
+const sortedMen = computed(() => sortedMembers.value.filter(m => isManGender(m.gender)))
+const sortedWomen = computed(() => sortedMembers.value.filter(m => isWomanGender(m.gender)))
+
 const loadSchedule = async () => {
   if (!isEdit.value) return
   const res = await getSchedule(route.params.id)
   form.title = res.data.title || ''
   form.date = res.data.date || ''
   form.participants = Array.isArray(res.data.participants) ? res.data.participants : []
-  const existingIds = form.participants.map(p => p.id).filter(Boolean)
-  selectedIds.value = existingIds
+  form.leader_id = res.data.leader_id || ''
+  form.leader_name = res.data.leader_name || ''
+  selectedIds.value = form.leader_id ? [form.leader_id] : (form.participants.map(p => p.id).filter(Boolean))
 }
 
 onMounted(async () => {
@@ -146,12 +176,23 @@ const confirmSelection = () => {
     name: mapById.get(id) || '',
     date: toYYMMDD(form.date)
   }))
+  if (form.leader_id) {
+    form.leader_name = mapById.get(form.leader_id) || ''
+  }
 }
 
 const clearSelection = () => {
   selectedIds.value = []
   form.participants = []
 }
+
+// leader 선택 시 체크박스 자동 반영 및 이름 설정
+watch(() => form.leader_id, (val) => {
+  if (!val) return
+  selectedIds.value = [val]
+  const m = members.value.find(x => x._id === val)
+  form.leader_name = m ? m.member_name : ''
+})
 
 const participantsPreview = computed(() => form.participants.map(p => p.name).join(', '))
 
@@ -170,6 +211,13 @@ const submit = async () => {
       alert('선택된 참여자의 이름 정보가 없습니다. 확인 후 다시 시도하세요.')
       loading.value = false
       return
+    }
+    // leader_name 보강 설정
+    if (form.leader_id) {
+      const m = members.value.find(x => x._id === form.leader_id)
+      form.leader_name = m ? m.member_name : ''
+    } else {
+      form.leader_name = ''
     }
     const toYYMMDD = (val) => {
       if (!val) return ''

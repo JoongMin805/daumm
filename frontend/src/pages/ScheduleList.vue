@@ -38,6 +38,7 @@
               </div>
             </div>
             <div class="participants-area">
+              <p>벙주: {{ item.leader_name }}</p>
               <div>
                 <a class="btn-more" @click.prevent="toggleParticipants(item._id)" :class="{ active: isParticipantsActive(item._id) }"><span>참석자 : </span></a>
               </div>

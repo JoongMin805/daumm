@@ -114,6 +114,20 @@
                 </ul>   
               </div>
             </div>
+            <div class="info">
+              <span class="">벙주 횟수: </span>
+              <div class="leader-cnt">
+                <ul class="month-check">
+                  <li
+                    v-for="mon in leaderMonths(member)"
+                    :key="'leader-'+mon"
+                  >
+                    <span class="mon">{{ mon }}월</span>
+                    <span class="num">{{ getLeaderMonthValue(member, mon) }}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
             <!-- <div class="info"><span>{{ member.new_check }}</span></div> -->
             <div class="user_del-area" v-if="isAdmin">
               <button @click="remove(member._id)">삭제</button>
@@ -236,6 +250,33 @@ const getMonthValue = (member, mon) => {
   const key = String(mon).padStart(2, '0')
   const rec = monthlyCounts.value.get(member._id)
   return (rec && rec[key]) ? rec[key] : 0
+}
+
+const leaderMonthlyCounts = computed(() => {
+  const map = new Map()
+  for (const g of schedule.value) {
+    const leaderId = g.leader_id
+    if (!leaderId) continue
+    const d = parseYYMMDD(g.date)
+    if (!d) continue
+    const mm = String(d.getMonth() + 1).padStart(2, '0')
+    const rec = map.get(leaderId) || {}
+    rec[mm] = (rec[mm] || 0) + 1
+    map.set(leaderId, rec)
+  }
+  return map
+})
+const getLeaderMonthValue = (member, mon) => {
+  const key = String(mon).padStart(2, '0')
+  const rec = leaderMonthlyCounts.value.get(member._id)
+  return (rec && rec[key]) ? rec[key] : 0
+}
+const leaderMonths = (member) => {
+  const arr = []
+  for (let i = 1; i <= 12; i++) {
+    if (getLeaderMonthValue(member, i) > 0) arr.push(i)
+  }
+  return arr
 }
 
 const formatYYMMDD = (value) => {

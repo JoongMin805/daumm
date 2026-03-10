@@ -143,8 +143,8 @@ app.get("/api/schedules/:id", async (req, res) => {
 // 모임 생성
 app.post("/api/schedules", async (req, res) => {
   try {
-    const { title, date, participants } = req.body;
-    const item = new Schedule({ title, date, participants });
+    const { title, date, participants, leader_id = "", leader_name = "" } = req.body;
+    const item = new Schedule({ title, date, participants, leader_id, leader_name });
     await item.save();
     res.status(201).json({ success: true, data: item });
   } catch (err) {
@@ -156,10 +156,10 @@ app.post("/api/schedules", async (req, res) => {
 // 모임 수정
 app.put("/api/schedules/:id", async (req, res) => {
   try {
-    const { title, date, participants } = req.body;
+    const { title, date, participants, leader_id = "", leader_name = "" } = req.body;
     const updated = await Schedule.findByIdAndUpdate(
       req.params.id,
-      { title, date, participants },
+      { title, date, participants, leader_id, leader_name },
       { new: true, runValidators: true }
     );
     if (!updated) return res.status(404).json({ success: false, message: "모임 없음" });
