@@ -8,7 +8,16 @@
           <input type="text" v-model="form.title" placeholder="제목" />
         </div>
         <div class="datepicker">
-          <VueDatePicker v-model="form.date" placeholder="날짜(YYMMDD)" :auto-apply="true" :enable-time-picker="false" :formats="{ input: 'yyMMdd' }"/>
+          <VueDatePicker 
+            v-model="form.date" 
+            placeholder="날짜(YYMMDD)" 
+            :auto-apply="true" 
+            :enable-time-picker="false" 
+            :formats="{ input: 'yyMMdd' }"
+            :locale="ko"
+            :min-date="minRegDate"
+            :year-range="[2026, new Date().getFullYear()]"
+          />
         </div>
 
         <div class="leader_selc-area">
@@ -65,12 +74,14 @@ import { useRoute, useRouter } from 'vue-router'
 import { getMembers } from '@/api/members'
 import { getSchedule, createSchedule, updateSchedule } from '@/api/schedules'
 import { VueDatePicker } from '@vuepic/vue-datepicker';
+import { ko } from 'date-fns/locale'
 import '@vuepic/vue-datepicker/dist/main.css'
 
 const route = useRoute()
 const router = useRouter()
 const isEdit = computed(() => !!route.params.id)
 const loading = ref(false)
+const minRegDate = new Date(2026, 0, 1);
 
 const form = reactive({
   title: '',

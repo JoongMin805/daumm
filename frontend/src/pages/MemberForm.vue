@@ -14,10 +14,30 @@
           <span class="frm-radio"><input type="radio" id="gender_w" name="gender" v-model="form.gender" value="woman"><label for="gender_w">여</label></span>
         </div>
         <div class="datepicker">
-          <VueDatePicker v-model="form.birth" placeholder="생년월일(YYMMDD)" :auto-apply="true" :enable-time-picker="false" :formats="{ input: 'yyMMdd' }" maxlength="6"/>
+          <VueDatePicker
+            v-model="form.birth"
+            placeholder="생년월일(YYMMDD)"
+            :auto-apply="true"
+            :enable-time-picker="false"
+            :formats="{ input: 'yyMMdd' }"
+            :locale="ko"
+            :min-date="minBirth"
+            :max-date="maxBirth"
+            :year-range="[1985, 1997]"
+            maxlength="6"
+          />
         </div>
         <div class="datepicker">
-          <VueDatePicker v-model="form.regist_date" placeholder="가입일(YYMMDD)" :auto-apply="true" :enable-time-picker="false" :formats="{ input: 'yyMMdd' }" />
+          <VueDatePicker 
+            v-model="form.regist_date" 
+            placeholder="가입일(YYMMDD)" 
+            :auto-apply="true" 
+            :enable-time-picker="false" 
+            :formats="{ input: 'yyMMdd' }"
+            :locale="ko"
+            :min-date="minRegDate"
+            :year-range="[2026, new Date().getFullYear()]"
+          />
         </div>
         <div class="manage">
           <span class="frm-checkbox">
@@ -39,6 +59,7 @@ import { reactive, ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { getMember, createMember, updateMember } from "@/api/members";
 import { VueDatePicker } from '@vuepic/vue-datepicker';
+import { ko } from 'date-fns/locale'
 import '@vuepic/vue-datepicker/dist/main.css'
 
 const route = useRoute();
@@ -46,6 +67,10 @@ const router = useRouter();
 
 const isEdit = computed(() => !!route.params.id);
 const loading = ref(false);
+
+const minBirth = new Date(1985, 0, 1);
+const maxBirth = new Date(1997, 11, 31);
+const minRegDate = new Date(2026, 0, 1);
 
 const form = reactive({
   member_name: "",
