@@ -13,10 +13,12 @@
     <div class="list-wrap">
       <div class="sort-wrap">
         <div class="sort_btn-area">
-          <button class="btn1" @click="sortByAttend">{{ isAttendSorted ? '초기화' : '참여순' }}</button>
-          <button class="btn2" @click="toggleBirthFilter">{{ isBirthFiltered ? '전체' : '이번 달 생일' }}</button>
-          <button class="btn3" @click="sortByName">이름순</button>
-          <button class="btn4" @click="sortByLeader">{{ isLeaderSorted ? '초기화' : '벙주순' }}</button>
+          <ul>
+            <li><button class="btn3" @click="sortByName">이름순</button></li>
+            <li><button class="btn4" @click="sortByLeader">{{ isLeaderSorted ? '초기화' : '벙주순' }}</button></li>
+            <li><button class="btn1" @click="sortByAttend">{{ isAttendSorted ? '초기화' : '참여순' }}</button></li>
+            <li><button class="btn2" @click="toggleBirthFilter">{{ isBirthFiltered ? '전체' : '이번 달 생일' }}</button></li>
+          </ul>
         </div>
         <div class="gender_sort-area">
           <span class="frm-radio">
@@ -30,6 +32,12 @@
           </span>
         </div>
         <div class="select_sort-area">
+          <div>
+            <span class="s-tit">이름</span>
+            <div class="frm">
+              <input type="text" placeholder="이름을 입력하세요" v-model="searchName">
+            </div>
+          </div>
           <div>
             <span class="s-tit">연도</span>
             <span class="selectBox">
@@ -55,17 +63,11 @@
               </select>
             </span>
           </div>
-          <div>
-            <span class="s-tit">이름</span>
-            <div class="frm">
-              <input type="text" placeholder="이름을 입력하세요" v-model="searchName">
-            </div>
-          </div>
         </div>
       </div>
 
       <div class="total-count-area">
-        총 <span class="total-count">{{ displayedMembers.length }}</span> 명
+        총 <strong class="total-count">{{ displayedMembers.length }}</strong> 명
       </div>
 
       <ul class="member-list" v-if="pagedMembers.length">

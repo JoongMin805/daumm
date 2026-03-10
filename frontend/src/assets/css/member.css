@@ -364,10 +364,27 @@ textarea:focus {
   margin-top: 2.7778vw;
 }
 
-.sort_btn-area {
+.sort_btn-area ul {
   display: flex;
-  gap: 3.3333vw;
 }
+.sort_btn-area ul li {
+  position: relative;
+}
+.sort_btn-area ul li + li {
+  margin-left: 12px;
+  padding-left: 12px;
+}
+.sort_btn-area ul li + li::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 12px;
+  background: #8a8a8a;
+}
+
 .sort_btn-area button {
   padding: 2.2222vw 0;
 }
@@ -456,7 +473,7 @@ textarea:focus {
 .month-check li span{display: block;text-align: center;font-size: 3.8889vw;}
 .sch_del-area button,
 .user_del-area button{display: flex;align-items: center;justify-content: center;border-radius: 3.3333vw;padding: 0 4.4444vw;min-height: 10vw;font-weight: 600;width: 100%;background: transparent;color: var(--text);border: 0.2778vw solid #a3a7ad;box-shadow: none;}
-.btn_reg-area{position: fixed;bottom: 2.2222vw;left: 3.3333vw;z-index: 10;width: calc(100% - 6.6667vw);}
+.btn_reg-area{position: fixed;bottom: 6.6667vw;left: 3.3333vw;z-index: 10;width: calc(100% - 6.6667vw);}
 .total_schedule-area{margin: 4.4444vw 0 2.2222vw;}
 .schedule-info .scd-info a{display: block;text-decoration: underline;}
 .sch_del-area{margin-top: 2.2222vw;}
