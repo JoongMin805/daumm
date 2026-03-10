@@ -450,7 +450,7 @@ textarea:focus {
 .name-info a{text-decoration: underline;}
 .user_info-area > div + div{margin-top: 2.2222vw;}
 .tbl-area{margin-top: 4.4444vw;}
-.month-check{display: flex;flex-wrap: wrap;margin-top: 6.6667vw;padding: 2.2222vw;border: 0.2778vw solid #575757;border-radius: 1.6667vw;}
+.month-check{display: flex;flex-wrap: wrap;margin-top: 2.2222vw;padding: 2.2222vw;border: 0.2778vw solid #575757;border-radius: 1.6667vw;}
 .month-check li{width: calc(100% / 6);}
 .month-check li:nth-child(n+7){margin-top: 3.3333vw;}
 .month-check li span{display: block;text-align: center;font-size: 3.8889vw;}
