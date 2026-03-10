@@ -491,3 +491,4 @@ textarea:focus {
 .leader-check li span + span{margin-left: 1.1111vw;}
 
 .participants-tit{margin-top: 1.1111vw;}
+.leader_selc-area{display: flex;gap: 2.7778vw;}

@@ -34,7 +34,7 @@
               </div>
               <div class="">
                 <span>날짜 : </span>
-                <span>{{ formatYYMMDD(item.date) }}</span>
+                <span><strong>{{ formatYYMMDD(item.date) }}</strong></span>
               </div>
             </div>
             <div class="participants-area">

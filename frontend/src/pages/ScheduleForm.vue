@@ -13,12 +13,14 @@
 
         <div class="leader_selc-area">
           <div class="frm">
+            <span>남: </span>
             <select v-model="form.leader_id" placeholder="(남) 벙주를 선택하세요.">
               <option value="">벙주를 선택하세요.</option>
               <option v-for="m in sortedMen" :value="m._id" :key="m._id">{{ m.member_name }}</option>
             </select>
           </div>
           <div class="frm">
+            <span>여: </span>
             <select v-model="form.leader_id" placeholder="(여) 벙주를 선택하세요.">
               <option value="">벙주를 선택하세요.</option>
               <option v-for="m in sortedWomen" :value="m._id" :key="m._id">{{ m.member_name }}</option>
