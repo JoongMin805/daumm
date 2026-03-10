@@ -488,6 +488,7 @@ textarea:focus {
 .reg_frm-area .frm{display: block;}
 .datepicker input.dp__input{padding-left: 7.7778vw}
 .reg_frm-area form > div{margin-top: 3.3333vw}
+.reg_frm-area form > div.btm_btn-area{margin-top: 6.6667vw;}
 .btn_confirm-area,
 .btm_btn-area,
 .reg_frm-area .btn-area{display: flex;gap: 3.3333vw;}
