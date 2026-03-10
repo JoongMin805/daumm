@@ -41,7 +41,7 @@
           <h3>참여자</h3>
           <div v-if="members.length" class="mem-list">
             <span class="frm-checkbox" v-for="m in sortedMembers" :key="m._id">
-              <input :id="`choice_${m._id}`" type="checkbox" :value="m._id" v-model="selectedIds" /><label :for="`choice_${m._id}`">{{ m.member_name }}</label>
+              <input :id="`choice_${m._id}`" type="checkbox" :value="String(m._id)" v-model="selectedIds" /><label :for="`choice_${m._id}`">{{ m.member_name }}</label>
             </span>
           </div>
           <div class="no_data" v-else>
@@ -83,6 +83,21 @@ const isEdit = computed(() => !!route.params.id)
 const loading = ref(false)
 const minRegDate = new Date(2026, 0, 1);
 
+const toDateSafe = (val) => {
+  if (!val) return ''
+  if (val instanceof Date) return val
+  const s = String(val)
+  if (/^\d{6}$/.test(s)) {
+    const yy = parseInt(s.slice(0, 2), 10)
+    const fullYear = yy >= 70 ? 1900 + yy : 2000 + yy
+    const mm = parseInt(s.slice(2, 4), 10) - 1
+    const dd = parseInt(s.slice(4, 6), 10)
+    return new Date(fullYear, mm, dd)
+  }
+  const d = new Date(s)
+  return isNaN(d) ? '' : d
+}
+
 const form = reactive({
   title: '',
   date: '',
@@ -93,6 +108,7 @@ const form = reactive({
 
 const members = ref([])
 const selectedIds = ref([])
+const initialized = ref(false)
 
 const loadMembers = async () => {
   const res = await getMembers()
@@ -123,16 +139,17 @@ const loadSchedule = async () => {
   if (!isEdit.value) return
   const res = await getSchedule(route.params.id)
   form.title = res.data.title || ''
-  form.date = res.data.date || ''
+  form.date = toDateSafe(res.data.date || '')
   form.participants = Array.isArray(res.data.participants) ? res.data.participants : []
   form.leader_id = res.data.leader_id || ''
   form.leader_name = res.data.leader_name || ''
-  selectedIds.value = form.leader_id ? [form.leader_id] : (form.participants.map(p => p.id).filter(Boolean))
+  selectedIds.value = (form.participants.map(p => String(p.id)).filter(Boolean))
 }
 
 onMounted(async () => {
   await loadMembers()
   await loadSchedule()
+  initialized.value = true
 })
 
 const ensureParticipantsFromSelection = () => {
@@ -200,10 +217,12 @@ const clearSelection = () => {
 }
 
 // leader 선택 시 체크박스 자동 반영 및 이름 설정
-watch(() => form.leader_id, (val) => {
+watch(() => form.leader_id, (val, oldVal) => {
+  if (!initialized.value) return
   if (!val) return
-  selectedIds.value = [val]
-  const m = members.value.find(x => x._id === val)
+  const idStr = String(val)
+  selectedIds.value = [idStr]
+  const m = members.value.find(x => String(x._id) === idStr)
   form.leader_name = m ? m.member_name : ''
 })
 
