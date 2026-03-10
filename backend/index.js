@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from "path"; // 1. path 모듈 추가
 import { fileURLToPath } from "url"; // ES Module 환경에서 경로 설정을 위해 필요
-import { connectDB } from "./db.js";
+import { connectDB, dbReadyState } from "./db.js";
 import Member from "./models/Member.js";
 import Schedule from "./models/Schedule.js";
 
@@ -45,6 +45,11 @@ app.use(express.json());
 /* =========================
    API
 ========================= */
+
+app.get("/api/health", (_req, res) => {
+  const state = dbReadyState();
+  res.json({ ok: state === 1, state });
+});
 
 // 전체 조회
 app.get("/api/members", async (req, res) => {
