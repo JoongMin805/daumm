@@ -104,22 +104,28 @@
             <div class="info">
               <span class="dday">월 1회 참석 : {{ getDday(member) }}</span>
             </div>
-            <div class="info">
-              <span class="participaion-cnt">총 참석횟수 : {{ getTotalParticipation(member._id) }}</span>
-              <div class="tbl-area">
-                <span>월별 참석 횟수</span>
-                <ul class="month-check">
-                  <li
-                    v-for="mon in 12"
-                    :key="mon"
-                    class="month-cnt"
-                    :data-month="String(mon).padStart(2, '0')"
-                  >
-                    <span class="mon">{{ mon }}월</span>
-                    <span class="num">{{ getMonthValue(member, mon) }}</span>
-                  </li>
-                </ul>   
+            <div class="month_info-wrap">
+              <div class="info this_month" :class="{ active: activeDetailId === member._id }">
+                <span>이번 달 참석 횟수 : <strong>{{ getMonthValue(member, currentMonth) }}</strong> 회</span>
+                <a class="btn_detail" @click="toggleMonthDetail(member._id)">전체보기</a>
               </div>
+              <div class="info total-participaion" :class="{ active: activeDetailId === member._id }">
+                <span class="participaion-cnt">총 참석횟수 : {{ getTotalParticipation(member._id) }} 회</span>
+                <div class="tbl-area">
+                  <span>월별 참석 횟수</span>
+                  <ul class="month-check">
+                    <li
+                      v-for="mon in 12"
+                      :key="mon"
+                      class="month-cnt"
+                      :data-month="String(mon).padStart(2, '0')"
+                    >
+                      <span class="mon">{{ mon }}월</span>
+                      <span class="num">{{ getMonthValue(member, mon) }}</span>
+                    </li>
+                  </ul>   
+                </div>
+            </div>
             </div>
             <div class="info leader-info" v-if="leaderMonths(member).length">
               <span>벙주 횟수: </span>
@@ -184,6 +190,16 @@ const orderMember = ref('total')
 const schedule = ref([])
 const pageSize = 10
 const currentPage = ref(1)
+const currentMonth = new Date().getMonth() + 1
+const activeDetailId = ref(null)
+
+const toggleMonthDetail = (id) => {
+  if (activeDetailId.value === id) {
+    activeDetailId.value = null
+  } else {
+    activeDetailId.value = id
+  }
+}
 
 
 const load = async () => {
@@ -292,16 +308,23 @@ const leaderMonths = (member) => {
 const formatYYMMDD = (value) => {
   if (!value) return ''
 
-  // 이미 YYMMDD면 그대로
-  if (/^\d{6}$/.test(value)) return value
+  let yy, mm, dd
 
-  const d = new Date(value)
-  if (isNaN(d)) return value
+  // 이미 YYMMDD (6자리) 형태인 경우
+  if (/^\d{6}$/.test(value)) {
+    yy = value.slice(0, 2)
+    mm = value.slice(2, 4)
+    dd = value.slice(4, 6)
+  } else {
+    const d = new Date(value)
+    if (isNaN(d)) return value
 
-  const yy = String(d.getFullYear()).slice(2)
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const dd = String(d.getDate()).padStart(2, '0')
-  return `${yy}${mm}${dd}`
+    yy = String(d.getFullYear()).slice(2)
+    mm = String(d.getMonth() + 1).padStart(2, '0')
+    dd = String(d.getDate()).padStart(2, '0')
+  }
+
+  return `${yy}.${mm}.${dd}`
 }
 
 const formatBirth = (value) => {

@@ -28,13 +28,14 @@
         <li v-for="item in pagedLists" :key="item._id">
           <div class="schedule-info">
             <div class="scd-info">
-              <div>
+              <div class="scd-tit">
+                <span>벙 제목 : </span>
                 <a v-if="isAdmin" @click.prevent="goEdit(item._id)">{{ item.title }}</a>
                 <span v-else>{{ item.title }}</span>
               </div>
               <div class="">
                 <span>날짜 : </span>
-                <span><strong>{{ formatYYMMDD(item.date) }}</strong></span>
+                <span><strong>{{ formatYYMMDD(item.date) }}</strong> <span>({{ getDayOfWeek(item.date) }})</span></span>
               </div>
             </div>
             <div class="participants-area">
@@ -125,6 +126,14 @@ const formatYYMMDD = (val) => {
   const s = String(val)
   if (s.length !== 6) return val
   return `${s.substring(0,2)}.${s.substring(2,4)}.${s.substring(4,6)}`
+}
+
+const getDayOfWeek = (val) => {
+  if (!val) return ''
+  const d = toDate(val)
+  if (!d || isNaN(d.getTime())) return ''
+  const days = ['일', '월', '화', '수', '목', '금', '토']
+  return days[d.getDay()]
 }
 
 const toDate = (val) => {

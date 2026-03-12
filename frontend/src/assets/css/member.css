@@ -80,7 +80,7 @@ body,
   background: var(--card);
   border: 0.2778vw solid var(--field-border);
   border-radius: 4.4444vw;
-  padding: 7.7778vw 6.6667vw;
+  padding: 4.4444vw 6.6667vw;
   box-shadow: 0 2.7778vw 8.3333vw rgba(0,0,0,0.35);
 }
 
@@ -438,9 +438,6 @@ textarea:focus {
 .frm-checkbox input[type="checkbox"]:checked + label::before {
   background-image: url(../images/ico_checkbox_on.svg);
 }
-.gender_sort-area {
-  margin-top: 2.2222vw;
-}
 .gender_sort-area .frm-radio + .frm-radio {
   margin-left: 3.3333vw;
 }
@@ -470,7 +467,7 @@ textarea:focus {
 .br-area{display: flex;align-items: center; justify-content: space-between;}
 .name-info a{text-decoration: underline;}
 .user_info-area > div + div{margin-top: 2.2222vw;}
-.tbl-area{margin-top: 4.4444vw;}
+.tbl-area{margin-top: 2.2222vw;}
 .month-check{display: flex;flex-wrap: wrap;margin-top: 2.2222vw;padding: 2.2222vw;border: 0.2778vw solid #575757;border-radius: 1.6667vw;}
 .month-check li{width: calc(100% / 6);}
 .month-check li:nth-child(n+7){margin-top: 3.3333vw;}
@@ -515,3 +512,12 @@ textarea:focus {
 .leader_selc-area{display: flex;gap: 2.7778vw;}
 .reg_frm-area .leader_selc-area .frm{width: 50%;}
 .schedule_info-wrap > div.schedule_member-info{margin-top: 8.8889vw;}
+
+.month_info-wrap .this_month{display: flex;align-items: center;justify-content: space-between;}
+.month_info-wrap .this_month a{display: block;position: relative;height: 5.5556vw;padding-right: 24px;line-height: 5.5556vw;text-decoration: none;}
+.month_info-wrap .this_month a::after{content: '';position: absolute;top: 50%;right: 0;transform: translateY(-50%);width: 5.5556vw;height: 5.5556vw;background: url(../images/ico_arrow_more.svg) no-repeat 0 0;}
+.month_info-wrap .this_month.active a::after{transform: translateY(-50%) rotate(180deg);}
+.total-participaion{display: none;margin-top: 2.2222vw;}
+.total-participaion.active{display: block;}
+.scd-tit{display: flex;align-items: center;}
+.scd-tit span:first-child{margin-right: 1.1111vw}
