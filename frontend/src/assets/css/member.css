@@ -525,4 +525,4 @@ textarea:focus {
 .member-list .manage .name-info a,
 .member-list .manage .name-info span{position: relative;padding-left: 6.6667vw;}
 .member-list .manage .name-info a::before,
-.member-list .manage .name-info span::before{content: '';position: absolute;top: 50%;left: 0;width: 5.5556vw;height: 5.5556vw;background: url(../images/ico_crown.svg) no-repeat 0 0;transform: translateY(-50%);}
+.member-list .manage .name-info span::before{content: '';position: absolute;top: 50%;left: 0;width: 5.5556vw;height: 5.5556vw;background: url(../images/ico_crown.svg) no-repeat 0 0;background-size: 5.5556vw 5.5556vw;transform: translateY(-50%);}
