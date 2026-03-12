@@ -12,6 +12,17 @@
     
     <div class="list-wrap">
       <div class="sort-wrap">
+        <div class="month_sort-area">
+          <span class="frm-radio">
+            <input type="radio" id="total_month" name="atten" value="total" v-model="selectedMonth" checked><label for="total_month">전체</label>
+          </span>
+          <span class="frm-radio">
+            <input type="radio" id="attend_month_y" name="atten" value="y" v-model="selectedMonth"><label for="attend_month_y">참여</label>
+          </span>
+          <span class="frm-radio">
+            <input type="radio" id="attend_month_n" name="atten" value="n" v-model="selectedMonth"><label for="attend_month_n">미참여</label>
+          </span>
+        </div>
         <div class="gender_sort-area">
           <span class="frm-radio">
             <input type="radio" id="total_gender" name="gender" value="total" v-model="selectedGender" checked><label for="total_gender">전체</label>
@@ -185,6 +196,7 @@ const isBirthFiltered = ref(false)
 const selectedBirthYear = ref('total')
 const selectedPeriod = ref('total')
 const selectedGender = ref('total')
+const selectedMonth = ref('total')
 const searchName = ref('')
 const orderMember = ref('total')
 const schedule = ref([])
@@ -467,6 +479,13 @@ const displayedMembers = computed(() => {
   } else if (selectedGender.value === 'woman') {
     list = list.filter(m => isWomanGender(m.gender))
   }
+
+  if (selectedMonth.value === 'y') {
+    list = list.filter(m => getMonthValue(m, currentMonth) > 0)
+  } else if (selectedMonth.value === 'n') {
+    list = list.filter(m => getMonthValue(m, currentMonth) === 0)
+  }
+
   const val = selectedPeriod.value
   if (val === 'total') return list
   const limit = Number(val)
@@ -480,6 +499,15 @@ const displayedMembers = computed(() => {
 const totalPages = computed(() => Math.max(1, Math.ceil(displayedMembers.value.length / pageSize)))
 const pages = computed(() => Array.from({ length: totalPages.value }, (_, i) => i + 1))
 const sortedMembers = computed(() => {
+  // '이번달 미참여' 선택 시 항상 이름순으로 정렬
+  if (selectedMonth.value === 'n') {
+    return [...displayedMembers.value].sort((a, b) => {
+      const an = a.member_name || ''
+      const bn = b.member_name || ''
+      return an.localeCompare(bn, 'ko')
+    })
+  }
+
   if (isAttendSorted.value || isLeaderSorted.value) {
     return displayedMembers.value
   }

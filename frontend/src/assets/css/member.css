@@ -438,6 +438,8 @@ textarea:focus {
 .frm-checkbox input[type="checkbox"]:checked + label::before {
   background-image: url(../images/ico_checkbox_on.svg);
 }
+.gender_sort-area{margin-top: 2.2222vw;}
+.month_sort-area .frm-radio + .frm-radio,
 .gender_sort-area .frm-radio + .frm-radio {
   margin-left: 3.3333vw;
 }
