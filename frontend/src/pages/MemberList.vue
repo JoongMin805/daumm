@@ -12,14 +12,6 @@
     
     <div class="list-wrap">
       <div class="sort-wrap">
-        <div class="sort_btn-area">
-          <ul>
-            <li><button class="btn3" @click="sortByName">이름순</button></li>
-            <li><button class="btn4" @click="sortByLeader">{{ isLeaderSorted ? '초기화' : '벙주순' }}</button></li>
-            <li><button class="btn1" @click="sortByAttend">{{ isAttendSorted ? '초기화' : '참여순' }}</button></li>
-            <li><button class="btn2" @click="toggleBirthFilter">{{ isBirthFiltered ? '전체' : '이번 달 생일' }}</button></li>
-          </ul>
-        </div>
         <div class="gender_sort-area">
           <span class="frm-radio">
             <input type="radio" id="total_gender" name="gender" value="total" v-model="selectedGender" checked><label for="total_gender">전체</label>
@@ -35,8 +27,20 @@
           <div>
             <span class="s-tit">이름</span>
             <div class="frm">
-              <input type="text" placeholder="이름을 입력하세요" v-model="searchName">
+              <input type="text" placeholder="이름 입력" v-model="searchName">
             </div>
+          </div>
+          <div>
+            <span class="s-tit">정렬</span>
+            <span class="selectBox">
+              <select name="order" v-model="orderMember" @change="filterByOrder">
+                <option value="total">전체</option>
+                <option value="name">이름</option>
+                <option value="leader">벙주순</option>
+                <option value="attend">참여순</option>
+                <option value="birth">이번달 생일</option>
+              </select>
+            </span>
           </div>
           <div>
             <span class="s-tit">연도</span>
@@ -168,12 +172,15 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const members = ref([])
-const isAttendSorted = ref(false)
 const originMembers = ref([])
+const isAttendSorted = ref(false)
+const isLeaderSorted = ref(false)
+const isBirthFiltered = ref(false)
 const selectedBirthYear = ref('total')
 const selectedPeriod = ref('total')
 const selectedGender = ref('total')
 const searchName = ref('')
+const orderMember = ref('total')
 const schedule = ref([])
 const pageSize = 10
 const currentPage = ref(1)
@@ -404,16 +411,6 @@ const getTotalParticipation = (memberId) => {
   return Object.values(rec).reduce((sum, n) => sum + (n || 0), 0)
 }
 const isNameAsc = ref(true)
-const sortByName = () => {
-  const dir = isNameAsc.value ? 1 : -1
-  members.value = [...members.value].sort((a, b) => {
-    const an = a.member_name || ''
-    const bn = b.member_name || ''
-    return an.localeCompare(bn, 'ko') * dir
-  })
-  isNameAsc.value = !isNameAsc.value
-  currentPage.value = 1
-}
 const getGatherDaysLeft = (memberId) => {
   const d = latestGatherDateFor(memberId)
   if (!d) return null
@@ -474,59 +471,7 @@ const pagedMembers = computed(() => {
   const start = (currentPage.value - 1) * pageSize
   return sortedMembers.value.slice(start, start + pageSize)
 })
-const sortByAttend = () => {
-  if (!isAttendSorted.value) {
-    members.value = [...members.value].sort((a, b) => {
-      const ac = getTotalParticipation(a._id)
-      const bc = getTotalParticipation(b._id)
-      if (bc !== ac) return bc - ac
-      const an = a.member_name || ''
-      const bn = b.member_name || ''
-      return an.localeCompare(bn, 'ko')
-    })
-  } else {
-    members.value = [...originMembers.value]
-  }
 
-  isAttendSorted.value = !isAttendSorted.value
-  isLeaderSorted.value = false
-  currentPage.value = 1
-}
-
-const isBirthFiltered = ref(false)
-
-const toggleBirthFilter = () => {
-  if (!isBirthFiltered.value) {
-    const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0')
-    members.value = originMembers.value.filter(member => birthMonthOf(member.birth) === currentMonth)
-  } else {
-    members.value = [...originMembers.value]
-  }
-
-  isBirthFiltered.value = !isBirthFiltered.value
-  currentPage.value = 1
-}
-
-const isLeaderSorted = ref(false)
-const sortByLeader = () => {
-  if (!isLeaderSorted.value) {
-    const mon = new Date().getMonth() + 1
-    const base = [...originMembers.value].filter(m => getLeaderMonthValue(m, mon) > 0)
-    members.value = base.sort((a, b) => {
-      const ac = getLeaderMonthValue(a, mon)
-      const bc = getLeaderMonthValue(b, mon)
-      if (bc !== ac) return bc - ac
-      const an = a.member_name || ''
-      const bn = b.member_name || ''
-      return an.localeCompare(bn, 'ko')
-    })
-  } else {
-    members.value = [...originMembers.value]
-  }
-  isLeaderSorted.value = !isLeaderSorted.value
-  isAttendSorted.value = false
-  currentPage.value = 1
-}
 const filterByBirthYear = () => {
   // 👉 전체 선택
   if (selectedBirthYear.value === 'total') {
@@ -546,6 +491,62 @@ const filterByBirthYear = () => {
 
     return birthYear === selectedBirthYear.value
   })
+}
+
+const filterByOrder = () => {
+  // Reset all flags first
+  isAttendSorted.value = false
+  isLeaderSorted.value = false
+  isBirthFiltered.value = false
+  isNameAsc.value = true // Reset to default ascending for name sort
+
+  switch (orderMember.value) {
+    case 'total':
+      members.value = [...originMembers.value]
+      break
+    case 'name':
+      // 이름순은 기본 ㄱ-ㅎ
+      isNameAsc.value = true 
+      members.value = [...originMembers.value].sort((a, b) => {
+        const an = a.member_name || ''
+        const bn = b.member_name || ''
+        return an.localeCompare(bn, 'ko')
+      })
+      break
+    case 'leader':
+      // 벙주순 (이번달 벙주 횟수 많은 순)
+      isLeaderSorted.value = true
+      const mon = new Date().getMonth() + 1
+      const leaders = [...originMembers.value].filter(m => getLeaderMonthValue(m, mon) > 0)
+      members.value = leaders.sort((a, b) => {
+        const ac = getLeaderMonthValue(a, mon)
+        const bc = getLeaderMonthValue(b, mon)
+        if (bc !== ac) return bc - ac
+        const an = a.member_name || ''
+        const bn = b.member_name || ''
+        return an.localeCompare(bn, 'ko')
+      })
+      break
+    case 'attend':
+      // 참여순 (총 참여횟수 많은 순)
+      isAttendSorted.value = true
+      members.value = [...originMembers.value].sort((a, b) => {
+        const ac = getTotalParticipation(a._id)
+        const bc = getTotalParticipation(b._id)
+        if (bc !== ac) return bc - ac
+        const an = a.member_name || ''
+        const bn = b.member_name || ''
+        return an.localeCompare(bn, 'ko')
+      })
+      break
+    case 'birth':
+      // 이번달 생일 필터
+      isBirthFiltered.value = true
+      const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0')
+      members.value = originMembers.value.filter(member => birthMonthOf(member.birth) === currentMonth)
+      break
+  }
+  currentPage.value = 1
 }
 
 const goPage = (p) => {
