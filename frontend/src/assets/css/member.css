@@ -80,7 +80,7 @@ body,
   background: var(--card);
   border: 0.2778vw solid var(--field-border);
   border-radius: 4.4444vw;
-  padding: 4.4444vw 6.6667vw;
+  padding: 4.4444vw 4.4444vw;
   box-shadow: 0 2.7778vw 8.3333vw rgba(0,0,0,0.35);
 }
 
