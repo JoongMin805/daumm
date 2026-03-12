@@ -575,6 +575,7 @@ const filterByOrder = () => {
 const goPage = (p) => {
   if (p < 1 || p > totalPages.value) return
   currentPage.value = p
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 const prevPage = () => goPage(currentPage.value - 1)
 const nextPage = () => goPage(currentPage.value + 1)
