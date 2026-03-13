@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container login-container">
     <div class="login-form">
       <h1>로그인</h1>
       <form @submit.prevent="login">

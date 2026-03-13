@@ -153,9 +153,9 @@
               </div>
             </div>
             <!-- <div class="info"><span>{{ member.new_check }}</span></div> -->
-            <div class="user_del-area" v-if="isAdmin">
-              <button @click="remove(member._id)">삭제</button>
-            </div>
+          </div>
+          <div class="user_del-area" v-if="isAdmin">
+            <button @click="remove(member._id)">삭제</button>
           </div>
         </li>
       </ul>

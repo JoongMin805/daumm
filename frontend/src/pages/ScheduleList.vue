@@ -47,9 +47,9 @@
                 <span>{{ renderParticipants(item.participants) }}</span>
               </div>
             </div>
-            <div class="sch_del-area" v-if="isAdmin">
-              <button @click="remove(item._id)">삭제</button>
-            </div>
+          </div>
+          <div class="sch_del-area" v-if="isAdmin">
+            <button @click="remove(item._id)">삭제</button>
           </div>
         </li>
       </ul>
