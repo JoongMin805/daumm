@@ -559,6 +559,9 @@ textarea:focus {
   select, 
   textarea {border: 1px solid var(--field-border); border-radius: 6px; padding: 12px 16px; }
 
+  .schedule-info .scd-info a,
+  button:hover{cursor: pointer;}
+
   .btn_confirm-area button.btn-cancel, 
   .btm_btn-area button.btn-cancel, 
   .btn-area button.btn-cancel, 
