@@ -114,7 +114,7 @@
               </div>
             </div>
             <div class="info">
-              <span class="dday">월 1회 참석 : {{ getDday(member) }}</span>
+              <span class="dday">월 1회 참석 : {{ getDday(member) }} ({{ getLastAttendDisplay(member._id) }})</span>
             </div>
             <div class="month_info-wrap">
               <div class="info this_month" :class="{ active: activeDetailId === member._id }">
@@ -415,15 +415,26 @@ const parseYYMMDD = (value) => {
 
 const latestGatherDateFor = (memberId) => {
   let latest = null
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
   for (const g of schedule.value) {
     const found = (g.participants || []).find(p => p.id === memberId)
     if (found) {
       const pd = parseYYMMDD(found.date || g.date)
       if (!pd) continue
+      // 오늘 날짜 기준으로 지난 날짜만 체크
+      if (pd >= today) continue
       if (!latest || pd > latest) latest = pd
     }
   }
   return latest
+}
+
+const getLastAttendDisplay = (memberId) => {
+  const d = latestGatherDateFor(memberId)
+  if (!d) return '-'
+  return formatYYMMDD(d)
 }
 
 const getGatherDday = (memberId) => {
