@@ -69,12 +69,13 @@
             </span>
           </div>
           <div>
-            <span class="s-tit">남은기간</span>
+            <span class="s-tit">월별 생일</span>
             <span class="selectBox">
-              <select id="period" v-model="selectedPeriod">
-                <option value="total">total</option>
-                <option value="7">7일</option>
-                <option value="15">15일</option>
+              <select id="birthMonth" v-model="selectedBirthMonth">
+                <option value="total">전체</option>
+                <option v-for="m in 12" :key="m" :value="String(m).padStart(2, '0')">
+                  {{ m }}월
+                </option>
               </select>
             </span>
           </div>
@@ -194,7 +195,7 @@ const isAttendSorted = ref(false)
 const isLeaderSorted = ref(false)
 const isBirthFiltered = ref(false)
 const selectedBirthYear = ref('total')
-const selectedPeriod = ref('total')
+const selectedBirthMonth = ref('total')
 const selectedGender = ref('total')
 const selectedMonth = ref('total')
 const searchName = ref('')
@@ -269,12 +270,16 @@ const isBirthThisMonth = (birth) => {
 
 const monthlyCounts = computed(() => {
   const map = new Map()
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
   for (const g of schedule.value) {
     const baseDate = g.date
     const arr = g.participants || []
     for (const p of arr) {
       const d = parseYYMMDD(p.date || baseDate)
       if (!d) continue
+      if (d >= today) continue
       const mm = String(d.getMonth() + 1).padStart(2, '0')
       const id = p.id
       const rec = map.get(id) || {}
@@ -292,11 +297,15 @@ const getMonthValue = (member, mon) => {
 
 const leaderMonthlyCounts = computed(() => {
   const map = new Map()
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
   for (const g of schedule.value) {
     const leaderId = g.leader_id
     if (!leaderId) continue
     const d = parseYYMMDD(g.date)
     if (!d) continue
+    if (d >= today) continue
     const mm = String(d.getMonth() + 1).padStart(2, '0')
     const rec = map.get(leaderId) || {}
     rec[mm] = (rec[mm] || 0) + 1
@@ -486,15 +495,11 @@ const displayedMembers = computed(() => {
     list = list.filter(m => getMonthValue(m, currentMonth) === 0)
   }
 
-  const val = selectedPeriod.value
-  if (val === 'total') return list
-  const limit = Number(val)
-  return list.filter(m => {
-    const days = getGatherDaysLeft(m._id)
-    if (days === null) return false
-    if (limit === 15) return days <= 15 && days >= 8
-    return days <= limit
-  })
+  if (selectedBirthMonth.value !== 'total') {
+    list = list.filter(m => birthMonthOf(m.birth) === selectedBirthMonth.value)
+  }
+
+  return list
 })
 const totalPages = computed(() => Math.max(1, Math.ceil(displayedMembers.value.length / pageSize)))
 const pages = computed(() => Array.from({ length: totalPages.value }, (_, i) => i + 1))

@@ -18,6 +18,12 @@
         <span class="frm">
           <input type="text" v-model="searchName" placeholder="이름 검색" />
         </span>
+        <span class="selectBox">
+          <select name="selectedMonth" v-model="selectedMonth">
+            <option value="total">전체</option>
+            <option v-for="m in 12" :key="m" :value="String(m).padStart(2, '0')">{{ m }}월</option>
+          </select>
+        </span>
       </div>
 
       <div class="total_schedule-area">
@@ -84,6 +90,7 @@ const router = useRouter()
 const lists = ref([])
 const searchTitle = ref('')
 const searchName = ref('')
+const selectedMonth = ref('total')
 const pageSize = 10
 const currentPage = ref(1)
 
@@ -157,12 +164,24 @@ const renderParticipants = (arr = []) => {
 const filtered = computed(() => {
   const titleQ = searchTitle.value.trim().toLowerCase()
   const nameQ = searchName.value.trim().toLowerCase()
+  const monthQ = selectedMonth.value
+
   return lists.value.filter(item => {
+    // 벙제목 필터
     const matchTitle = !titleQ || (item.title || '').toLowerCase().includes(titleQ)
-    const matchName =
-      !nameQ ||
-      (item.participants || []).some(p => (p.name || '').toLowerCase().includes(nameQ))
-    return matchTitle && matchName
+    
+    // 이름 필터
+    const matchName = !nameQ || (item.participants || []).some(p => (p.name || '').toLowerCase().includes(nameQ))
+    
+    // 월별 필터
+    let matchMonth = true
+    if (monthQ !== 'total') {
+      const d = toDate(item.date)
+      const mm = String(d.getMonth() + 1).padStart(2, '0')
+      matchMonth = mm === monthQ
+    }
+
+    return matchTitle && matchName && matchMonth
   })
 })
 const totalCount = computed(() => filtered.value.length)
