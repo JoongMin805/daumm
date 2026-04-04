@@ -1,12 +1,14 @@
 import mongoose from "mongoose";
 
-let connecting = false;
+let connecting = null;
 let keepAliveTimer = null;
 
 const uri = process.env.MONGODB_URI;
 const options = {
-  serverSelectionTimeoutMS: 10000,
+  serverSelectionTimeoutMS: 5000,
   socketTimeoutMS: 45000,
+  maxPoolSize: 10,
+  minPoolSize: 2,
   family: 4
 };
 
@@ -14,41 +16,57 @@ function startKeepAlive() {
   if (keepAliveTimer) clearInterval(keepAliveTimer);
   keepAliveTimer = setInterval(async () => {
     try {
-      if (mongoose.connection.readyState === 1 && mongoose.connection.db) {
-        await mongoose.connection.db.admin().command({ ping: 1 });
+      if (mongoose.connection.readyState === 1) {
+        await mongoose.connection.db.admin().ping();
+        console.log("📍 MongoDB Keep-Alive Ping");
       }
-    } catch {}
-  }, 5 * 60 * 1000);
+    } catch (err) {
+      console.error("❌ MongoDB Keep-Alive Failed:", err.message);
+    }
+  }, 3 * 60 * 1000); // 3분마다 핑
 }
 
 export const connectDB = async () => {
   if (!uri) {
-    console.error("MongoDB URI not set");
-    return;
+    console.error("❌ MONGODB_URI is not defined in environment variables");
+    process.exit(1);
   }
-  if (mongoose.connection.readyState === 1 || connecting) return;
-  connecting = true;
-  try {
-    const conn = await mongoose.connect(uri, options);
-    console.log(`MongoDB connected: ${conn.connection.host}`);
-    startKeepAlive();
-  } catch (err) {
-    console.error("MongoDB connection failed:", err.message);
-    setTimeout(connectDB, 5000);
-  } finally {
-    connecting = false;
+
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
   }
+
+  if (connecting) {
+    return connecting;
+  }
+
+  console.log("🔄 Connecting to MongoDB...");
+  connecting = mongoose.connect(uri, options)
+    .then((conn) => {
+      console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+      startKeepAlive();
+      connecting = null;
+      return conn;
+    })
+    .catch((err) => {
+      console.error("❌ MongoDB Connection Error:", err.message);
+      connecting = null;
+      // 재연결 시도
+      setTimeout(connectDB, 5000);
+      throw err;
+    });
+
+  return connecting;
 };
 
-let listenersBound = false;
-if (!listenersBound) {
-  listenersBound = true;
-  mongoose.connection.on("disconnected", () => {
-    setTimeout(connectDB, 3000);
-  });
-  mongoose.connection.on("error", () => {
-    setTimeout(connectDB, 5000);
-  });
-}
+// 연결 상태 감시
+mongoose.connection.on("disconnected", () => {
+  console.log("⚠️ MongoDB Disconnected. Attempting to reconnect...");
+  setTimeout(connectDB, 3000);
+});
+
+mongoose.connection.on("error", (err) => {
+  console.error("❌ MongoDB Error Event:", err.message);
+});
 
 export const dbReadyState = () => mongoose.connection.readyState;

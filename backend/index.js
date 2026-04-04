@@ -14,7 +14,18 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 
 const app = express();
-connectDB();
+
+// DB 연결 미들웨어: DB가 연결되지 않은 상태에서 요청이 오면 503 반환
+app.use((req, res, next) => {
+  if (dbReadyState() !== 1 && req.path.startsWith("/api")) {
+    return res.status(503).json({
+      success: false,
+      message: "데이터베이스 연결 중입니다. 잠시 후 다시 시도해주세요.",
+      readyState: dbReadyState()
+    });
+  }
+  next();
+});
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -187,6 +198,23 @@ app.get("*", (_req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+
+// DB 연결 후 서버 시작
+const startServer = async () => {
+  try {
+    // 1. DB 연결 시도 (실패해도 서버는 일단 시작하지만 API는 503 반환)
+    await connectDB();
+    
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error("❌ Failed to connect to DB on startup:", err.message);
+    // Render 등 환경에서는 일단 서버가 떠야 하므로 listen 호출
+    app.listen(PORT, () => {
+      console.log(`🚀 Server started (but DB is still connecting...) on port ${PORT}`);
+    });
+  }
+};
+
+startServer();
