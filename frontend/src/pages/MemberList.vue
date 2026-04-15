@@ -189,6 +189,7 @@ import { getSchedules } from '@/api/schedules'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const currentMonth = new Date().getMonth() + 1
 const members = ref([])
 const originMembers = ref([])
 const isAttendSorted = ref(false)
@@ -203,7 +204,6 @@ const orderMember = ref('total')
 const schedule = ref([])
 const pageSize = 10
 const currentPage = ref(1)
-const currentMonth = new Date().getMonth() + 1
 const activeDetailId = ref(null)
 
 const toggleMonthDetail = (id) => {
@@ -262,10 +262,9 @@ const isBirthThisMonth = (birth) => {
   if (!birth) return false
 
   const m = birthMonthOf(birth)
+  const currentMonthStr = String(new Date().getMonth() + 1).padStart(2, '0')
 
-  const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0')
-
-  return m === currentMonth
+  return m === currentMonthStr
 }
 
 const monthlyCounts = computed(() => {
@@ -581,36 +580,34 @@ const filterByOrder = () => {
       })
       break
     case 'leader':
-      // 벙주순 (이번달 벙주 횟수 많은 순)
+      // 벙주순 (이번달 벙주 횟수 1이상 멤버를 횟수 많은 순 -> ㄱ-ㅎ 순으로)
       isLeaderSorted.value = true
-      const mon = new Date().getMonth() + 1
-      const leaders = [...originMembers.value].filter(m => getLeaderMonthValue(m, mon) > 0)
-      members.value = leaders.sort((a, b) => {
-        const ac = getLeaderMonthValue(a, mon)
-        const bc = getLeaderMonthValue(b, mon)
-        if (bc !== ac) return bc - ac
-        const an = a.member_name || ''
-        const bn = b.member_name || ''
-        return an.localeCompare(bn, 'ko')
-      })
+      members.value = originMembers.value
+        .filter(m => getLeaderMonthValue(m, currentMonth) >= 1)
+        .sort((a, b) => {
+          const countA = getLeaderMonthValue(a, currentMonth)
+          const countB = getLeaderMonthValue(b, currentMonth)
+          if (countB !== countA) return countB - countA
+          return (a.member_name || '').localeCompare(b.member_name || '', 'ko')
+        })
       break
     case 'attend':
-      // 참여순 (총 참여횟수 많은 순)
+      // 참여순 (이번달 참여 횟수 1이상 멤버를 횟수 많은 순 -> ㄱ-ㅎ 순으로)
       isAttendSorted.value = true
-      members.value = [...originMembers.value].sort((a, b) => {
-        const ac = getTotalParticipation(a._id)
-        const bc = getTotalParticipation(b._id)
-        if (bc !== ac) return bc - ac
-        const an = a.member_name || ''
-        const bn = b.member_name || ''
-        return an.localeCompare(bn, 'ko')
-      })
+      members.value = originMembers.value
+        .filter(m => getMonthValue(m, currentMonth) >= 1)
+        .sort((a, b) => {
+          const countA = getMonthValue(a, currentMonth)
+          const countB = getMonthValue(b, currentMonth)
+          if (countB !== countA) return countB - countA
+          return (a.member_name || '').localeCompare(b.member_name || '', 'ko')
+        })
       break
     case 'birth':
       // 이번달 생일 필터
       isBirthFiltered.value = true
-      const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0')
-      members.value = originMembers.value.filter(member => birthMonthOf(member.birth) === currentMonth)
+      const mStr = String(new Date().getMonth() + 1).padStart(2, '0')
+      members.value = originMembers.value.filter(member => birthMonthOf(member.birth) === mStr)
       break
   }
   currentPage.value = 1

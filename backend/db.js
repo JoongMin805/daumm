@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 let connecting = null;
 let keepAliveTimer = null;
 
-const uri = process.env.MONGODB_URI;
 const options = {
   serverSelectionTimeoutMS: 5000,
   socketTimeoutMS: 45000,
@@ -27,9 +26,10 @@ function startKeepAlive() {
 }
 
 export const connectDB = async () => {
+  const uri = process.env.MONGODB_URI;
   if (!uri) {
     console.error("❌ MONGODB_URI is not defined in environment variables");
-    process.exit(1);
+    return; // Render 등 환경에서는 일단 에러 로그만 남기고 종료하지 않음 (재시도 대기)
   }
 
   if (mongoose.connection.readyState === 1) {

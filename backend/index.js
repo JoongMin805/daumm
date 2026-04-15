@@ -1,6 +1,9 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+
+dotenv.config();
+
 import path from "path"; // 1. path 모듈 추가
 import { fileURLToPath } from "url"; // ES Module 환경에서 경로 설정을 위해 필요
 import { connectDB, dbReadyState } from "./db.js";
@@ -10,8 +13,6 @@ import Schedule from "./models/Schedule.js";
 // ES Module에서 __dirname 사용을 위한 설정
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-dotenv.config();
 
 const app = express();
 
