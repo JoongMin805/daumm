@@ -67,7 +67,7 @@
         <button v-if="isAdmin" @click="$router.push('/schedule/new')">등록</button>
       </div>
 
-      <div class="pagination schedule-pagination" v-if="totalPages > 1">
+      <div class="pagination" v-if="totalPages > 1">
         <button class="btn-first" @click="goFirst" :disabled="currentPage === 1"><span class="blind">처음</span></button>
         <button class="btn-prev" @click="prevPage" :disabled="currentPage === 1"><span class="blind">이전</span></button>
         <button

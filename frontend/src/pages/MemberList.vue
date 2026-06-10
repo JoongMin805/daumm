@@ -180,14 +180,14 @@
       </div>
 
       <div class="pagination" v-if="pages.length > 1" style="margin-top:12px; display:flex; gap:8px; justify-content:center;">
-        <button class="btn-prev" @click="prevPage" :disabled="currentPage === 1">이전</button>
+        <button class="btn-prev" @click="prevPage" :disabled="currentPage === 1"><span class="blind">이전</span></button>
         <button
           v-for="p in pages"
           :key="p"
           :class="{ active: currentPage === p }"
           @click="goPage(p)"
         >{{ p }}</button>
-        <button class="btn-next" @click="nextPage" :disabled="currentPage === totalPages">다음</button>
+        <button class="btn-next" @click="nextPage" :disabled="currentPage === totalPages"><span class="blind">다음</span></button>
       </div>
     </div>
   </div>
