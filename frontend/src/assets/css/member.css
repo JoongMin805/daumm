@@ -473,7 +473,7 @@ textarea:focus {
   width: calc(50% - 1.1111vw);
 }
 
-.select_sort-area .s-tit {
+.sort-wrap .s-tit {
   display: block;
   margin-bottom: 1.1111vw;
 }
@@ -483,6 +483,10 @@ textarea:focus {
 }
 .total-count-area {
   margin-bottom: 1.1111vw;
+}
+
+.month_attend_sort-area {
+  margin-top: 2.2222vw;
 }
 
 .nga-area,

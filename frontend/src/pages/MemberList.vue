@@ -80,10 +80,21 @@
             </span>
           </div>
         </div>
+        <div class="month_attend_sort-area">
+          <span class="s-tit">월별 참석 순위</span>
+          <span class="selectBox">
+            <select name="month_attend_sort" id="month_attend_sort" v-model="selectedMonthSort" @change="sortByMonthAttend">
+              <option value="">선택</option>
+              <option v-for="m in 12" :key="m" :value="String(m)">{{ m }}월</option>
+            </select>
+          </span>
+        </div>
       </div>
 
       <div class="total-count-area">
-        총 <strong class="total-count">{{ displayedMembers.length }}</strong> 명
+        <div class="count-info">
+          총 <strong class="total-count">{{ displayedMembers.length }}</strong> 명
+        </div>
       </div>
 
       <ul class="member-list" v-if="pagedMembers.length">
@@ -201,6 +212,7 @@ const selectedGender = ref('total')
 const selectedMonth = ref('total')
 const searchName = ref('')
 const orderMember = ref('total')
+const selectedMonthSort = ref('')
 const schedule = ref([])
 const pageSize = 10
 const currentPage = ref(1)
@@ -565,6 +577,7 @@ const filterByOrder = () => {
   isLeaderSorted.value = false
   isBirthFiltered.value = false
   isNameAsc.value = true // Reset to default ascending for name sort
+  selectedMonthSort.value = '' // 월별 참석 정렬 초기화
 
   switch (orderMember.value) {
     case 'total':
@@ -610,6 +623,38 @@ const filterByOrder = () => {
       members.value = originMembers.value.filter(member => birthMonthOf(member.birth) === mStr)
       break
   }
+  currentPage.value = 1
+}
+
+const sortByMonthAttend = () => {
+  if (!selectedMonthSort.value) {
+    members.value = [...originMembers.value]
+    return
+  }
+
+  const mon = parseInt(selectedMonthSort.value)
+
+  // 다른 정렬 플래그 초기화
+  isAttendSorted.value = true // 참석 정렬 플래그 활성화 (sortedMembers에서 정렬되지 않도록)
+  isLeaderSorted.value = false
+  isBirthFiltered.value = false
+  orderMember.value = 'total'
+
+  members.value = [...originMembers.value].sort((a, b) => {
+    const countA = getMonthValue(a, mon)
+    const countB = getMonthValue(b, mon)
+
+    // 1순위: 월별 참석 횟수 내림차순
+    if (countB !== countA) {
+      return countB - countA
+    }
+
+    // 2순위: 이름 오름차순 (ㄱ-ㅎ)
+    const nameA = a.member_name || ''
+    const nameB = b.member_name || ''
+    return nameA.localeCompare(nameB, 'ko')
+  })
+
   currentPage.value = 1
 }
 
