@@ -77,6 +77,8 @@ body,
   color: var(--text);
 }
 
+.blind{position: absolute;top: -99999em;left: -99999em;font-size: 0;text-indent: -99999em;;}
+
 /* login/card layout */
 .container {
   min-height: 100vh;
@@ -527,7 +529,15 @@ textarea:focus {
 .schedule_info-wrap .mem-list .frm-checkbox:nth-child(n+2){margin-top: 2.2222vw;}
 .schedule_info-wrap > div{margin-top: 4.4444vw;}
 .pagination button{position: relative;padding: 3.3333vw 2.2222vw;}
-.pagination button.active::before {content: ''; position: absolute; bottom: 2.2222vw; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 1px; background-color: #fff;}
+.pagination button.active::before {content: ''; position: absolute; bottom: -0.5556vw; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 1px; background-color: #fff;}
+.pagination button { position: relative; width: 28px; height: 28px; padding: 0; vertical-align: middle;}
+.schedule-pagination{text-align: center;}
+.schedule-pagination button[class^="btn-"] { position: relative; padding: 2.2222vw 2.2222vw; background-position: 50% 50%;background-repeat: no-repeat;}
+.schedule-pagination .btn-first{background-image: url('../images/ico_first.svg');}
+.schedule-pagination .btn-prev{background-image: url('../images/ico_prev.svg');}
+.schedule-pagination .btn-next{background-image: url('../images/ico_next.svg');}
+.schedule-pagination .btn-last{background-image: url('../images/ico_last.svg');}
+
 
 .leader-check{margin-top: 1.1111vw;font-size: 0;}
 .leader-check li{display: inline-block;}
@@ -659,8 +669,10 @@ textarea:focus {
   .schedule_info-wrap .mem-list .frm-checkbox { width: 104px; }
   .schedule_info-wrap .mem-list .frm-checkbox:nth-child(n+2) { margin-top: 8px; }
   .schedule_info-wrap > div { margin-top: 16px; }
-  .pagination button { position: relative; padding: 12px 8px; }
-  .pagination button.active::before { content: ''; position: absolute; bottom: 8px; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 1px; background-color: #fff;}
+  .pagination button { position: relative; width: 28px; height: 28px; padding: 0; vertical-align: middle;}
+  .pagination button.active::before {bottom: -2px; width: 90%; height: 1px;}
+  .schedule-pagination button[class^="btn-"] {padding: 8px 8px;}
+
   .leader-check { margin-top: 4px; }
   .leader-check li + li::before { font-size: 14px; }
   .leader-check li span { font-size: 14px; }

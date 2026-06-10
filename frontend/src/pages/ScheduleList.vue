@@ -67,15 +67,17 @@
         <button v-if="isAdmin" @click="$router.push('/schedule/new')">등록</button>
       </div>
 
-      <div class="pagination" v-if="pages.length > 1" style="margin-top:12px; display:flex; gap:8px; justify-content:center;">
-        <button class="btn-prev" @click="prevPage" :disabled="currentPage === 1">이전</button>
+      <div class="pagination schedule-pagination" v-if="totalPages > 1">
+        <button class="btn-first" @click="goFirst" :disabled="currentPage === 1"><span class="blind">처음</span></button>
+        <button class="btn-prev" @click="prevPage" :disabled="currentPage === 1"><span class="blind">이전</span></button>
         <button
-          v-for="p in pages"
+          v-for="p in visiblePages"
           :key="p"
           :class="{ active: currentPage === p }"
           @click="goPage(p)"
         >{{ p }}</button>
-        <button class="btn-next" @click="nextPage" :disabled="currentPage === totalPages">다음</button>
+        <button class="btn-next" @click="nextPage" :disabled="currentPage === totalPages"><span class="blind">다음</span></button>
+        <button class="btn-last" @click="goLast" :disabled="currentPage === totalPages"><span class="blind">마지막</span></button>
       </div>
     </div>
   </div>
@@ -190,7 +192,24 @@ const sorted = computed(() => {
   return [...filtered.value].sort((a, b) => toDate(b.date) - toDate(a.date))
 })
 const totalPages = computed(() => Math.max(1, Math.ceil(sorted.value.length / pageSize)))
-const pages = computed(() => Array.from({ length: totalPages.value }, (_, i) => i + 1))
+const visiblePages = computed(() => {
+  const pages = []
+  const total = totalPages.value
+  const current = currentPage.value
+  const limit = 5
+
+  let start = Math.max(1, current - Math.floor(limit / 2))
+  let end = Math.min(total, start + limit - 1)
+
+  if (end - start + 1 < limit) {
+    start = Math.max(1, end - limit + 1)
+  }
+
+  for (let i = start; i <= end; i++) {
+    pages.push(i)
+  }
+  return pages
+})
 const pagedLists = computed(() => {
   const start = (currentPage.value - 1) * pageSize
   return sorted.value.slice(start, start + pageSize)
@@ -202,6 +221,8 @@ const goPage = (p) => {
 }
 const prevPage = () => goPage(currentPage.value - 1)
 const nextPage = () => goPage(currentPage.value + 1)
+const goFirst = () => goPage(1)
+const goLast = () => goPage(totalPages.value)
 
 watch(filtered, () => {
   currentPage.value = 1

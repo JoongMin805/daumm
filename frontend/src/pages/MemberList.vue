@@ -125,7 +125,7 @@
               </div>
             </div>
             <div class="info">
-              <span class="dday">월 1회 참석 : {{ getDday(member) }} ({{ getLastAttendDisplay(member._id) }})</span>
+              <span class="dday">월 1회 참석 : {{ getDday(member) }} {{ getLastAttendDisplay(member._id) }}</span>
             </div>
             <div class="month_info-wrap">
               <div class="info this_month" :class="{ active: activeDetailId === member._id }">
@@ -444,8 +444,8 @@ const latestGatherDateFor = (memberId) => {
 
 const getLastAttendDisplay = (memberId) => {
   const d = latestGatherDateFor(memberId)
-  if (!d) return '-'
-  return formatYYMMDD(d)
+  if (!d) return
+  return '('+ formatYYMMDD(d) +')'
 }
 
 const getGatherDday = (memberId) => {
@@ -463,13 +463,13 @@ const getDday = (member) => {
     const target = new Date(latest.getTime() + 30 * 24 * 60 * 60 * 1000)
     const now = new Date()
     const diff = Math.ceil((target - now) / (24 * 60 * 60 * 1000))
-    return diff <= 0 ? 'D-0' : `D-${diff}`
+    return diff <= 0 ? '미참석' : `D-${diff}`
   }
   const reg = parseYYMMDD(member.regist_date)
   if (!reg) return ''
   const now = new Date()
   const diff = Math.floor((now - reg) / (24 * 60 * 60 * 1000))
-  return diff >= 0 ? `D+${diff}` : `D-${Math.abs(diff)}`
+  return diff >= 0 ? '미참석' : `D-${Math.abs(diff)}`
 }
 const getTotalParticipation = (memberId) => {
   const rec = monthlyCounts.value.get(memberId)
