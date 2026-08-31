@@ -93,7 +93,7 @@ const lists = ref([])
 const searchTitle = ref('')
 const searchName = ref('')
 const selectedMonth = ref('total')
-const pageSize = 10
+const pageSize = 12
 const currentPage = ref(1)
 
 const load = async () => {
