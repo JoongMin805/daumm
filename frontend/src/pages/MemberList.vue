@@ -214,7 +214,7 @@ const searchName = ref('')
 const orderMember = ref('total')
 const selectedMonthSort = ref('')
 const schedule = ref([])
-const pageSize = 10
+const pageSize = 12
 const currentPage = ref(1)
 const activeDetailId = ref(null)
 
