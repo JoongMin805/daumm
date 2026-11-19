@@ -487,8 +487,22 @@ textarea:focus {
   margin-bottom: 1.1111vw;
 }
 
+.period_selc-wrap {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.sort-wrap .month_attend_sort-area .s-tit {
+  margin-bottom: 4px;
+}
+
 .month_attend_sort-area {
-  margin-top: 2.2222vw;
+  flex: 1;
+}
+
+.schedule_selc-wrap .selectBox {
+  margin-top: 10px;
 }
 
 .nga-area,

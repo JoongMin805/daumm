@@ -80,14 +80,26 @@
             </span>
           </div>
         </div>
-        <div class="month_attend_sort-area">
-          <span class="s-tit">월별 참석 순위</span>
-          <span class="selectBox">
-            <select name="month_attend_sort" id="month_attend_sort" v-model="selectedMonthSort" @change="sortByMonthAttend">
-              <option value="">선택</option>
-              <option v-for="m in 12" :key="m" :value="String(m)">{{ m }}월</option>
-            </select>
-          </span>
+        <div class="period_selc-wrap">
+          <div class="month_attend_sort-area">
+            <span class="s-tit">연도 선택</span>
+            <span class="selectBox">
+              <select name="attend_year" id="attend_year" v-model="selectedYear" @change="sortByMonthAttend">
+                <option value="">선택</option>
+                <option value="27">2027</option>
+                <option value="26">2026</option>
+              </select>
+            </span>
+          </div>
+          <div class="month_attend_sort-area">
+            <span class="s-tit">월별 참석 순위</span>
+            <span class="selectBox">
+              <select name="month_attend_sort" id="month_attend_sort" v-model="selectedMonthSort" @change="sortByMonthAttend">
+                <option value="">선택</option>
+                <option v-for="m in 12" :key="m" :value="String(m)">{{ m }}월</option>
+              </select>
+            </span>
+          </div>
         </div>
       </div>
 
@@ -127,6 +139,9 @@
             <div class="info">
               <span class="dday">월 1회 참석 : {{ getDday(member) }} {{ getLastAttendDisplay(member._id) }}</span>
             </div>
+            <!-- <div class="info" v-if="activeYearMonth">
+              <span>{{ activeYearMonth.year }}년 {{ activeYearMonth.month }}월 참석 : <strong>{{ getActiveMonthValue(member._id) }}</strong> 회</span>
+            </div> -->
             <div class="month_info-wrap">
               <div class="info this_month" :class="{ active: activeDetailId === member._id }">
                 <span>이번 달 참석 횟수 : <strong>{{ getMonthValue(member, currentMonth) }}</strong> 회</span>
@@ -172,7 +187,8 @@
         </li>
       </ul>
       <div class="no_data" v-else>
-        <p>등록된 회원이 없습니다.</p>
+        <p v-if="activeYearMonth && !hasMonthAttendData">해당달에는 참석이 없어요</p>
+        <p v-else>등록된 회원이 없습니다.</p>
       </div>
 
       <div v-if="isAdmin" class="btn_reg-area">
@@ -213,6 +229,7 @@ const selectedMonth = ref('total')
 const searchName = ref('')
 const orderMember = ref('total')
 const selectedMonthSort = ref('')
+const selectedYear = ref('')
 const schedule = ref([])
 const pageSize = 12
 const currentPage = ref(1)
@@ -305,6 +322,45 @@ const getMonthValue = (member, mon) => {
   const rec = monthlyCounts.value.get(member._id)
   return (rec && rec[key]) ? rec[key] : 0
 }
+
+const yearMonthCounts = computed(() => {
+  const map = new Map()
+
+  for (const g of schedule.value) {
+    const baseDate = g.date
+    const arr = g.participants || []
+    for (const p of arr) {
+      const d = parseYYMMDD(p.date || baseDate)
+      if (!d) continue
+      const key = `${String(d.getFullYear()).slice(2)}-${String(d.getMonth() + 1).padStart(2, '0')}`
+      const id = p.id
+      const rec = map.get(id) || {}
+      rec[key] = (rec[key] || 0) + 1
+      map.set(id, rec)
+    }
+  }
+  return map
+})
+const getYearMonthValue = (memberId, year, mon) => {
+  const key = `${year}-${String(mon).padStart(2, '0')}`
+  const rec = yearMonthCounts.value.get(memberId)
+  return (rec && rec[key]) ? rec[key] : 0
+}
+
+// 연도 + 월이 모두 선택된 경우에만 활성화
+const activeYearMonth = computed(() => {
+  if (!selectedYear.value || !selectedMonthSort.value) return null
+  return { year: parseInt(selectedYear.value), month: parseInt(selectedMonthSort.value) }
+})
+const getActiveMonthValue = (memberId) => {
+  if (!activeYearMonth.value) return 0
+  return getYearMonthValue(memberId, activeYearMonth.value.year, activeYearMonth.value.month)
+}
+// 선택한 연·월에 참석 기록이 하나라도 있는지
+const hasMonthAttendData = computed(() => {
+  if (!activeYearMonth.value) return false
+  return originMembers.value.some(m => getActiveMonthValue(m._id) > 0)
+})
 
 const leaderMonthlyCounts = computed(() => {
   const map = new Map()
@@ -521,6 +577,11 @@ const displayedMembers = computed(() => {
     list = list.filter(m => birthMonthOf(m.birth) === selectedBirthMonth.value)
   }
 
+  // 연·월 선택 시 해당 연·월에 참석한 회원만 표시
+  if (activeYearMonth.value) {
+    list = list.filter(m => getActiveMonthValue(m._id) > 0)
+  }
+
   return list
 })
 const totalPages = computed(() => Math.max(1, Math.ceil(displayedMembers.value.length / pageSize)))
@@ -532,6 +593,17 @@ const sortedMembers = computed(() => {
       const an = a.member_name || ''
       const bn = b.member_name || ''
       return an.localeCompare(bn, 'ko')
+    })
+  }
+
+  // 월별 참석 순위: 화면에 표시되는 '이번 달 참석 횟수'(선택 월) 기준 내림차순, 동률일 경우 이름순(ㄱ-ㅎ)
+  if (activeYearMonth.value) {
+    const mon = activeYearMonth.value.month
+    return [...displayedMembers.value].sort((a, b) => {
+      const countA = getMonthValue(a, mon)
+      const countB = getMonthValue(b, mon)
+      if (countB !== countA) return countB - countA
+      return (a.member_name || '').localeCompare(b.member_name || '', 'ko')
     })
   }
 
@@ -578,6 +650,7 @@ const filterByOrder = () => {
   isBirthFiltered.value = false
   isNameAsc.value = true // Reset to default ascending for name sort
   selectedMonthSort.value = '' // 월별 참석 정렬 초기화
+  selectedYear.value = '' // 연도 선택 초기화
 
   switch (orderMember.value) {
     case 'total':
@@ -627,34 +700,13 @@ const filterByOrder = () => {
 }
 
 const sortByMonthAttend = () => {
-  if (!selectedMonthSort.value) {
-    members.value = [...originMembers.value]
-    return
-  }
-
-  const mon = parseInt(selectedMonthSort.value)
-
-  // 다른 정렬 플래그 초기화
-  isAttendSorted.value = true // 참석 정렬 플래그 활성화 (sortedMembers에서 정렬되지 않도록)
+  // 월별 참석 순위는 displayedMembers / sortedMembers(computed)에서 처리되므로
+  // 여기서는 다른 정렬 상태만 초기화한다.
+  isAttendSorted.value = false
   isLeaderSorted.value = false
   isBirthFiltered.value = false
   orderMember.value = 'total'
-
-  members.value = [...originMembers.value].sort((a, b) => {
-    const countA = getMonthValue(a, mon)
-    const countB = getMonthValue(b, mon)
-
-    // 1순위: 월별 참석 횟수 내림차순
-    if (countB !== countA) {
-      return countB - countA
-    }
-
-    // 2순위: 이름 오름차순 (ㄱ-ㅎ)
-    const nameA = a.member_name || ''
-    const nameB = b.member_name || ''
-    return nameA.localeCompare(nameB, 'ko')
-  })
-
+  members.value = [...originMembers.value]
   currentPage.value = 1
 }
 

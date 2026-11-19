@@ -18,12 +18,21 @@
         <span class="frm">
           <input type="text" v-model="searchName" placeholder="이름 검색" />
         </span>
-        <span class="selectBox">
-          <select name="selectedMonth" v-model="selectedMonth">
-            <option value="total">전체</option>
-            <option v-for="m in 12" :key="m" :value="String(m).padStart(2, '0')">{{ m }}월</option>
-          </select>
-        </span>
+        <div class="schedule_selc-wrap">
+          <span class="selectBox">
+            <select name="selectedYear" v-model="selectedYear">
+              <option value="total" selected>전체</option>
+              <option value="27">2027</option>
+              <option value="26">2026</option>
+            </select>
+          </span>
+          <span class="selectBox">
+            <select name="selectedMonth" v-model="selectedMonth">
+              <option value="total">전체</option>
+              <option v-for="m in 12" :key="m" :value="String(m).padStart(2, '0')">{{ m }}월</option>
+            </select>
+          </span>  
+        </div>
       </div>
 
       <div class="total_schedule-area">
@@ -93,6 +102,7 @@ const lists = ref([])
 const searchTitle = ref('')
 const searchName = ref('')
 const selectedMonth = ref('total')
+const selectedYear = ref('total')
 const pageSize = 12
 const currentPage = ref(1)
 
@@ -167,6 +177,7 @@ const filtered = computed(() => {
   const titleQ = searchTitle.value.trim().toLowerCase()
   const nameQ = searchName.value.trim().toLowerCase()
   const monthQ = selectedMonth.value
+  const yearQ = selectedYear.value
 
   return lists.value.filter(item => {
     // 벙제목 필터
@@ -174,6 +185,13 @@ const filtered = computed(() => {
     
     // 이름 필터
     const matchName = !nameQ || (item.participants || []).some(p => (p.name || '').toLowerCase().includes(nameQ))
+
+    // 연도 필터
+    let matchYear = true
+    if (yearQ !== 'total') {
+      const d = toDate(item.date)
+      matchYear = String(d.getFullYear()).slice(2) === yearQ
+    }
     
     // 월별 필터
     let matchMonth = true
@@ -183,7 +201,7 @@ const filtered = computed(() => {
       matchMonth = mm === monthQ
     }
 
-    return matchTitle && matchName && matchMonth
+    return matchTitle && matchName && matchYear && matchMonth
   })
 })
 const totalCount = computed(() => filtered.value.length)
