@@ -139,7 +139,7 @@
             <div class="info">
               <span class="dday">월 1회 참석 : {{ getDday(member) }} {{ getLastAttendDisplay(member._id) }}</span>
             </div>
-            <!-- <div class="info" v-if="activeYearMonth">
+            <!-- 월별 참석 : <div class="info" v-if="activeYearMonth">
               <span>{{ activeYearMonth.year }}년 {{ activeYearMonth.month }}월 참석 : <strong>{{ getActiveMonthValue(member._id) }}</strong> 회</span>
             </div> -->
             <div class="month_info-wrap">
